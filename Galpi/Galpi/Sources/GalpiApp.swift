@@ -15,12 +15,13 @@ struct GalpiApp: App {
     // MARK: - Property
 
     private let modelContainer: ModelContainer
+    @State private var useCases: GalpiUseCases
 
     // MARK: - Body
 
     var body: some Scene {
         WindowGroup {
-            RootPlaceholderView()
+            RootView(useCases: useCases)
                 .modelContainer(modelContainer)
         }
     }
@@ -35,16 +36,12 @@ struct GalpiApp: App {
             // 로컬 전용으로 열고, 다음 실행에서 다시 CloudKit 을 시도한다.
             modelContainer = try! GalpiModelContainer.makeInMemory()
         }
+
+        let useCases = GalpiUseCases(container: modelContainer)
+        #if DEBUG
+        try? GalpiSampleData.seedIfEmpty(repository: useCases.repository)
+        #endif
+        _useCases = State(initialValue: useCases)
     }
 }
 
-/// Presentation 레이어(홈·검색·보관함·내 정보)는 후속 이슈에서 붙인다.
-private struct RootPlaceholderView: View {
-    var body: some View {
-        ContentUnavailableView(
-            "갈피",
-            systemImage: "bookmark",
-            description: Text("화면은 다음 이슈에서 붙습니다.")
-        )
-    }
-}
