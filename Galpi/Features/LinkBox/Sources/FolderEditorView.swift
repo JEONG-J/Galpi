@@ -32,9 +32,12 @@ struct FolderEditorView: View {
     let onFinish: () -> Void
 
     @Environment(\.dismiss) private var dismiss
+    /// `ColorPicker` 가 준 색을 hex 로 굳히려면 해석 환경이 필요하다.
+    @Environment(\.self) private var environment
 
     @State private var name = ""
     @State private var palette: FolderPalette = .blue
+    @State private var customColor = Color(rgba: 0x2E5AE5FF)
     @State private var iconName = "folder"
 
     /// 색과 짝지어 쓰는 아이콘 후보. 시안의 폴더 4종에 쓰인 것부터 앞에 둔다.
@@ -68,6 +71,7 @@ struct FolderEditorView: View {
                         ForEach(FolderPalette.allCases, id: \.self) { candidate in
                             swatch(candidate)
                         }
+                        customSwatch
                     }
 
                     section("아이콘") {
@@ -145,6 +149,29 @@ struct FolderEditorView: View {
         .accessibilityLabel(candidate.rawValue)
     }
 
+    /// 12색 밖의 색을 고르는 자리. 시스템 `ColorPicker` 를 스와치처럼 그대로 쓴다.
+    ///
+    /// 피커가 값을 쓰는 순간이 곧 "커스텀 색 선택"이라, 바인딩 setter 에서 팔레트까지 옮긴다.
+    private var customSwatch: some View {
+        let picked = Binding {
+            customColor
+        } set: { color in
+            customColor = color
+            palette = FolderPalette(rawValue: color.galpiHex(in: environment))
+        }
+
+        return ColorPicker("직접 선택", selection: picked, supportsOpacity: false)
+            .labelsHidden()
+            .frame(height: 34)
+            .overlay {
+                if palette.isCustom {
+                    Circle()
+                        .strokeBorder(GalpiColor.text.opacity(0.35), lineWidth: 2)
+                        .allowsHitTesting(false)
+                }
+            }
+    }
+
     private func iconOption(_ symbol: String) -> some View {
         Button { iconName = symbol } label: {
             Image(systemName: symbol)
@@ -167,6 +194,9 @@ struct FolderEditorView: View {
         name = folder.name
         palette = folder.color
         iconName = folder.iconName
+        if palette.isCustom, let picked = Color(galpiHex: palette.rawValue) {
+            customColor = picked
+        }
     }
 
     private func save() {

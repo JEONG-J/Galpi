@@ -143,49 +143,75 @@ public struct GalpiIconBadge: View {
 }
 
 /// 시안의 파스텔 조합(전경 아이콘색 + 연한 배경). 폴더 색 12종에 1:1로 대응한다.
-public enum GalpiPastel: String, CaseIterable, Sendable {
-    case red, orange, yellow, green, mint, teal, cyan, blue, indigo, purple, pink, brown
-    /// 시안의 '받은함'·'데이터 내보내기' 같은 무채색 자리.
-    case gray
+///
+/// 12색 이름·`gray` 는 시안 값을 그대로 쓰고, 그 밖의 이름은 사용자가 고른 `#RRGGBB` 로
+/// 보고 hex 하나에서 두 색을 파생한다. 이름도 hex 도 아니면 예전처럼 blue 로 떨어진다.
+public struct GalpiPastel: Hashable, Sendable {
 
-    public init(name: String) {
-        self = GalpiPastel(rawValue: name) ?? .blue
-    }
+    // MARK: - Property
+
+    /// 12색 이름·`gray`, 또는 `#RRGGBB` 커스텀 hex.
+    public let name: String
+
+    public static let red = GalpiPastel(name: "red")
+    public static let orange = GalpiPastel(name: "orange")
+    public static let yellow = GalpiPastel(name: "yellow")
+    public static let green = GalpiPastel(name: "green")
+    public static let mint = GalpiPastel(name: "mint")
+    public static let teal = GalpiPastel(name: "teal")
+    public static let cyan = GalpiPastel(name: "cyan")
+    public static let blue = GalpiPastel(name: "blue")
+    public static let indigo = GalpiPastel(name: "indigo")
+    public static let purple = GalpiPastel(name: "purple")
+    public static let pink = GalpiPastel(name: "pink")
+    public static let brown = GalpiPastel(name: "brown")
+    /// 시안의 '받은함'·'데이터 내보내기' 같은 무채색 자리.
+    public static let gray = GalpiPastel(name: "gray")
 
     public var foreground: Color {
-        switch self {
-        case .red: Color(rgba: 0xFF3B30FF)
-        case .orange: Color(rgba: 0xFF9500FF)
-        case .yellow: Color(rgba: 0xFFC400FF)
-        case .green: Color(rgba: 0x34C759FF)
-        case .mint: Color(rgba: 0x00C7BEFF)
-        case .teal: Color(rgba: 0x30B0C7FF)
-        case .cyan: Color(rgba: 0x5AC8FAFF)
-        case .blue: Color(rgba: 0x2E5AE5FF)
-        case .indigo: Color(rgba: 0x5856D6FF)
-        case .purple: Color(rgba: 0xAF52DEFF)
-        case .pink: Color(rgba: 0xFF2D55FF)
-        case .brown: Color(rgba: 0xA2845EFF)
-        case .gray: Color(rgba: 0x8E8E93FF)
+        switch name {
+        case "red": Color(rgba: 0xFF3B30FF)
+        case "orange": Color(rgba: 0xFF9500FF)
+        case "yellow": Color(rgba: 0xFFC400FF)
+        case "green": Color(rgba: 0x34C759FF)
+        case "mint": Color(rgba: 0x00C7BEFF)
+        case "teal": Color(rgba: 0x30B0C7FF)
+        case "cyan": Color(rgba: 0x5AC8FAFF)
+        case "blue": Color(rgba: 0x2E5AE5FF)
+        case "indigo": Color(rgba: 0x5856D6FF)
+        case "purple": Color(rgba: 0xAF52DEFF)
+        case "pink": Color(rgba: 0xFF2D55FF)
+        case "brown": Color(rgba: 0xA2845EFF)
+        case "gray": Color(rgba: 0x8E8E93FF)
+        default: GalpiPastelDerivation.derive(hex: name)?.foreground
+            ?? Color(rgba: 0x2E5AE5FF)
         }
     }
 
     public var background: Color {
-        switch self {
-        case .red: Color(rgba: 0xFFE8E6FF)
-        case .orange: Color(rgba: 0xFFF3E0FF)
-        case .yellow: Color(rgba: 0xFFF6D9FF)
-        case .green: Color(rgba: 0xE5F8EAFF)
-        case .mint: Color(rgba: 0xDFF7F5FF)
-        case .teal: Color(rgba: 0xE2F3F7FF)
-        case .cyan: Color(rgba: 0xE4F5FEFF)
-        case .blue: Color(rgba: 0xE8EDFCFF)
-        case .indigo: Color(rgba: 0xECECFAFF)
-        case .purple: Color(rgba: 0xF3E9FBFF)
-        case .pink: Color(rgba: 0xFFE7EEFF)
-        case .brown: Color(rgba: 0xF3EEE8FF)
-        case .gray: Color(rgba: 0xF0F0F3FF)
+        switch name {
+        case "red": Color(rgba: 0xFFE8E6FF)
+        case "orange": Color(rgba: 0xFFF3E0FF)
+        case "yellow": Color(rgba: 0xFFF6D9FF)
+        case "green": Color(rgba: 0xE5F8EAFF)
+        case "mint": Color(rgba: 0xDFF7F5FF)
+        case "teal": Color(rgba: 0xE2F3F7FF)
+        case "cyan": Color(rgba: 0xE4F5FEFF)
+        case "blue": Color(rgba: 0xE8EDFCFF)
+        case "indigo": Color(rgba: 0xECECFAFF)
+        case "purple": Color(rgba: 0xF3E9FBFF)
+        case "pink": Color(rgba: 0xFFE7EEFF)
+        case "brown": Color(rgba: 0xF3EEE8FF)
+        case "gray": Color(rgba: 0xF0F0F3FF)
+        default: GalpiPastelDerivation.derive(hex: name)?.background
+            ?? Color(rgba: 0xE8EDFCFF)
         }
+    }
+
+    // MARK: - Function
+
+    public init(name: String) {
+        self.name = name
     }
 }
 

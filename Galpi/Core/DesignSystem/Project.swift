@@ -3,5 +3,6 @@ import ProjectDescriptionHelpers
 
 let project = coreProject(
     name: "GalpiDesignSystem",
-    bundleIdSuffix: "designsystem"
+    bundleIdSuffix: "designsystem",
+    includesTests: true
 )
