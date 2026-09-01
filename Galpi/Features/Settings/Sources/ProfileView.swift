@@ -137,6 +137,7 @@ public struct ProfileView: View {
             .background(GalpiColor.background)
             .scrollIndicators(.hidden)
             .navigationTitle("내 정보")
+            .navigationBarTitleDisplayMode(.inline)
         }
         .onAppear { viewModel.load() }
     }
