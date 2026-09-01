@@ -75,8 +75,6 @@ public struct GalpiShadow: Sendable {
     public static let unreadCard = GalpiShadow(color: Color(rgba: 0x2E5AE514), blur: 16, y: 4)
     /// 주간 통계·설정 카드 — blur10 `#2E5AE50D` (0,2)
     public static let card = GalpiShadow(color: Color(rgba: 0x2E5AE50D), blur: 10, y: 2)
-    /// 탭 바 — blur14 `#2E5AE529` (0,2)
-    public static let tabBar = GalpiShadow(color: Color(rgba: 0x2E5AE529), blur: 14, y: 2)
     /// 태그 칩 — blur6 `#2E5AE50D` (0,1)
     public static let chip = GalpiShadow(color: Color(rgba: 0x2E5AE50D), blur: 6, y: 1)
     /// 프로필 카드 — blur14 `#2E5AE514` (0,3)

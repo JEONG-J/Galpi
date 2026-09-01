@@ -94,11 +94,11 @@ public struct HomeView: View {
                 }
                 .padding(.horizontal, 16)
                 .padding(.top, 8)
-                .padding(.bottom, 24 + GalpiTabBar.contentBottomInset)
+                .padding(.bottom, 24)
             }
             .scrollIndicators(.hidden)
             .background(GalpiColor.background)
-            .navigationBarHidden(true)
+            .toolbar(.hidden, for: .navigationBar)
             .navigationDestination(for: LinkRoute.self) { route in
                 LinkRouteView(route: route, useCases: useCases, path: $path)
             }

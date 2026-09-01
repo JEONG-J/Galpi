@@ -40,7 +40,6 @@ struct FilteredLinkListView: View {
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 16)
-            .padding(.bottom, GalpiTabBar.contentBottomInset)
         }
         .scrollIndicators(.hidden)
         .background(GalpiColor.background)

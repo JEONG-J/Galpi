@@ -86,13 +86,6 @@ public struct SearchView: View {
         NavigationStack(path: $path) {
             ScrollView {
                 VStack(alignment: .leading, spacing: 22) {
-                    Text("검색")
-                        .font(GalpiFont.largeTitle)
-                        .kerning(-0.8)
-                        .foregroundStyle(GalpiColor.text)
-
-                    searchField
-
                     if viewModel.query.trimmingCharacters(in: .whitespaces).isEmpty {
                         tagSuggestions
                     } else if viewModel.results.isEmpty {
@@ -106,42 +99,17 @@ public struct SearchView: View {
                     }
                 }
                 .padding(.horizontal, 16)
-                .padding(.bottom, 24 + GalpiTabBar.contentBottomInset)
+                .padding(.bottom, 24)
             }
             .scrollIndicators(.hidden)
             .background(GalpiColor.background)
-            .navigationBarHidden(true)
+            .navigationTitle("검색")
             .navigationDestination(for: LinkRoute.self) { route in
                 LinkRouteView(route: route, useCases: useCases, path: $path)
             }
         }
+        .searchable(text: $viewModel.query, prompt: "제목·메모·태그로 찾기")
         .onAppear { viewModel.load() }
-    }
-
-    private var searchField: some View {
-        HStack(spacing: 9) {
-            Image(systemName: "magnifyingglass")
-                .font(.system(size: 15, weight: .semibold))
-                .foregroundStyle(GalpiColor.textTertiary)
-
-            TextField("제목·메모·태그로 찾기", text: $viewModel.query)
-                .font(GalpiFont.text(14, .medium))
-                .foregroundStyle(GalpiColor.text)
-                .submitLabel(.search)
-
-            if !viewModel.query.isEmpty {
-                Button { viewModel.query = "" } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .font(.system(size: 15))
-                        .foregroundStyle(GalpiColor.textTertiary)
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel("검색어 지우기")
-            }
-        }
-        .padding(.horizontal, 14)
-        .frame(height: 48)
-        .galpiCard(cornerRadius: 16)
     }
 
     @ViewBuilder
