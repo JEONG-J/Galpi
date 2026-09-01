@@ -48,7 +48,7 @@ public final class GalpiUseCases {
         saveLink = DefaultSaveLinkUseCase(repository: repository)
         recordVisit = DefaultRecordLinkVisitUseCase(repository: repository)
         fetchUnread = DefaultFetchUnreadLinksUseCase(repository: repository)
-        manageFolder = DefaultManageFolderUseCase(repository: repository)
+        manageFolder = DefaultManageFolderUseCase(repository: repository, settings: settings)
         weeklyReport = DefaultWeeklyReportUseCase(repository: repository)
         enrichLink = DefaultEnrichLinkUseCase(
             repository: repository,

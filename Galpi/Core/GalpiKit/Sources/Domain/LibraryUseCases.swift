@@ -9,6 +9,26 @@ import Foundation
 
 // MARK: - 폴더 관리
 
+public enum ManageFolderError: LocalizedError {
+    /// 환경설정의 기본 저장 폴더는 지울 수 없다 — 지우면 공유 확장·저장 시트가 남은 UUID 로
+    /// 존재하지 않는 폴더를 계속 가리킨다.
+    case folderIsDefaultDestination(name: String)
+
+    public var errorDescription: String? {
+        switch self {
+        case .folderIsDefaultDestination(let name):
+            "'\(name)' 폴더는 기본 저장 폴더라 삭제할 수 없어요."
+        }
+    }
+
+    public var recoverySuggestion: String? {
+        switch self {
+        case .folderIsDefaultDestination:
+            "내 정보 → 환경설정 → 기본 저장 폴더에서 다른 폴더로 바꾼 뒤 다시 시도해 주세요."
+        }
+    }
+}
+
 @MainActor
 public protocol ManageFolderUseCase {
     func create(name: String, color: FolderPalette, iconName: String) throws -> UUID
@@ -17,6 +37,7 @@ public protocol ManageFolderUseCase {
     /// `orderedIDs` 순서대로 `sortOrder` 를 다시 매긴다.
     func reorder(orderedIDs: [UUID]) throws
     /// 폴더만 지운다. 안에 있던 링크는 삭제되지 않고 받은함으로 돌아간다.
+    /// 기본 저장 폴더는 `ManageFolderError.folderIsDefaultDestination` 으로 거절한다.
     func delete(folderID: UUID) throws
 }
 
@@ -24,9 +45,11 @@ public protocol ManageFolderUseCase {
 public struct DefaultManageFolderUseCase: ManageFolderUseCase {
 
     private let repository: any LinkRepository
+    private let settings: GalpiSettings
 
-    public init(repository: any LinkRepository) {
+    public init(repository: any LinkRepository, settings: GalpiSettings) {
         self.repository = repository
+        self.settings = settings
     }
 
     public func create(
@@ -69,6 +92,9 @@ public struct DefaultManageFolderUseCase: ManageFolderUseCase {
 
     public func delete(folderID: UUID) throws {
         guard let folder = try folder(folderID) else { return }
+        guard settings.defaultFolderID != folderID else {
+            throw ManageFolderError.folderIsDefaultDestination(name: folder.name)
+        }
         repository.delete(folder)
         try repository.save()
     }
