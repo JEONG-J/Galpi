@@ -76,6 +76,7 @@ public struct HomeView: View {
 
     @State private var viewModel: HomeViewModel
     @State private var path: [LinkRoute] = []
+    @State private var deletionTarget: Link?
     @Binding private var deepLink: GalpiDeepLink?
 
     private let useCases: GalpiUseCases
@@ -92,22 +93,32 @@ public struct HomeView: View {
 
     public var body: some View {
         NavigationStack(path: $path) {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 26) {
-                    unreadSection
-                    weeklyStatCard
-                    recentSection
-                }
-                .padding(.horizontal, 16)
-                .padding(.top, 8)
-                .padding(.bottom, 24)
+            List {
+                // 캐러셀은 카드 그림자가 행 밖으로 번지므로 좌우 여백을 행이 아니라 콘텐츠가 갖는다.
+                unreadSection
+                    .plainListRow(insets: EdgeInsets(top: 8, leading: 0, bottom: 0, trailing: 0))
+
+                weeklyStatCard
+                    .plainListRow(
+                        insets: EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16)
+                    )
+
+                recentSection
             }
+            .listStyle(.insetGrouped)
+            .listSectionSpacing(18)
+            .scrollContentBackground(.hidden)
             .scrollIndicators(.hidden)
             .background(GalpiColor.background)
             .toolbar(.hidden, for: .navigationBar)
             .navigationDestination(for: LinkRoute.self) { route in
-                LinkRouteView(route: route, useCases: useCases, path: $path)
+                LinkRouteView(route: route, useCases: useCases)
             }
+            .linkDeleteConfirmation(
+                target: $deletionTarget,
+                useCases: useCases,
+                onDeleted: viewModel.load
+            )
         }
         .onAppear { viewModel.load() }
         .onChange(of: deepLink) { _, link in
@@ -127,6 +138,7 @@ public struct HomeView: View {
     private var unreadSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             GalpiSectionHeader("아직 안 읽은 갈피", badgeCount: viewModel.unreadCount)
+                .padding(.horizontal, 16)
 
             if viewModel.unreadLinks.isEmpty {
                 // 저장이 0건인데 '다 읽었어요'가 뜨면 완료로 오해한다. 두 상태를 갈라 놓는다.
@@ -139,12 +151,14 @@ public struct HomeView: View {
                             path.append(.filtered(.all, title: "전체 갈피"))
                         }
                     )
+                    .padding(.horizontal, 16)
                 } else {
                     GalpiEmptyState(
                         symbol: "bookmark",
                         title: "아직 갈피가 없어요",
                         message: "읽고 싶은 글을 공유 시트에서 갈피로 보내면 여기에 쌓여요."
                     )
+                    .padding(.horizontal, 16)
                 }
             } else {
                 ScrollView(.horizontal) {
@@ -158,6 +172,7 @@ public struct HomeView: View {
                     }
                     // 카드 그림자가 잘리지 않도록 스크롤 콘텐츠에 여백을 준다.
                     .padding(.vertical, 6)
+                    .padding(.horizontal, 16)
                 }
                 .scrollIndicators(.hidden)
                 .scrollClipDisabled()
@@ -208,24 +223,39 @@ public struct HomeView: View {
 
     // MARK: - 최근 저장
 
+    @ViewBuilder
     private var recentSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            GalpiSectionHeader("최근 저장") {
-                GalpiSectionAction("전체 보기") {
-                    path.append(.filtered(.all, title: "전체 갈피"))
-                }
-            }
-
+        Section {
             if viewModel.recentLinks.isEmpty {
                 GalpiEmptyState(
                     symbol: "tray",
                     title: "아직 꽂아둔 갈피가 없어요",
                     message: "공유 시트에서 '갈피'를 누르면 첫 링크가 여기에 꽂혀요."
                 )
+                .plainListRow(insets: EdgeInsets(top: 0, leading: 16, bottom: 8, trailing: 16))
             } else {
-                LinkListCard(links: viewModel.recentLinks) { path.append(.detail($0.id)) }
+                ForEach(viewModel.recentLinks) { link in
+                    LinkListRow(link: link, onTogglePin: togglePin) { deletionTarget = $0 }
+                }
             }
+        } header: {
+            // 시안의 섹션 헤더 — 기본 `Section` 헤더(대문자 캡션)로 대체하지 않는다.
+            GalpiSectionHeader("최근 저장") {
+                GalpiSectionAction("전체 보기") {
+                    path.append(.filtered(.all, title: "전체 갈피"))
+                }
+            }
+            .textCase(nil)
+            .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 8, trailing: 16))
         }
+    }
+
+    // MARK: - Function
+
+    /// 고정 순서는 저장소가 매기므로 토글 뒤 다시 읽는다.
+    private func togglePin(_ link: Link) {
+        useCases.togglePin(link)
+        viewModel.load()
     }
 }
 
@@ -234,14 +264,13 @@ struct LinkRouteView: View {
 
     let route: LinkRoute
     let useCases: GalpiUseCases
-    @Binding var path: [LinkRoute]
 
     var body: some View {
         switch route {
         case .detail(let id):
             LinkDetailView(linkID: id, useCases: useCases)
         case .filtered(let filter, let title):
-            FilteredLinkListView(filter: filter, title: title, useCases: useCases, path: $path)
+            FilteredLinkListView(filter: filter, title: title, useCases: useCases)
         }
     }
 }

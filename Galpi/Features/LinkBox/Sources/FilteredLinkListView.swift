@@ -19,40 +19,53 @@ struct FilteredLinkListView: View {
     let filter: LinkFilter
     let title: String
     let useCases: GalpiUseCases
-    @Binding var path: [LinkRoute]
 
     @State private var links: [Link] = []
+    @State private var deletionTarget: Link?
 
     // MARK: - Body
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 16) {
-                if links.isEmpty {
-                    GalpiEmptyState(
-                        symbol: emptyState.symbol,
-                        title: emptyState.title,
-                        message: emptyState.message
-                    )
-                } else {
-                    LinkListCard(links: links) { path.append(.detail($0.id)) }
+        List {
+            if links.isEmpty {
+                GalpiEmptyState(
+                    symbol: emptyState.symbol,
+                    title: emptyState.title,
+                    message: emptyState.message
+                )
+                .plainListRow(
+                    insets: EdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16)
+                )
+            } else {
+                ForEach(links) { link in
+                    LinkListRow(link: link, onTogglePin: togglePin) { deletionTarget = $0 }
                 }
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 16)
         }
-        .scrollIndicators(.hidden)
+        .listStyle(.insetGrouped)
+        .scrollContentBackground(.hidden)
         .background(GalpiColor.background)
+        .scrollIndicators(.hidden)
         .navigationTitle(title)
         .toolbarTitleDisplayMode(.inline)
-        .onAppear {
-            links = (try? useCases.repository.links(
-                matching: filter, includeArchived: false, limit: nil
-            )) ?? []
-        }
+        .onAppear(perform: load)
+        .linkDeleteConfirmation(target: $deletionTarget, useCases: useCases, onDeleted: load)
     }
 
     // MARK: - Function
+
+    /// 삭제·고정 뒤에도 다시 읽는다 — 지워진 링크가 배열에 남으면 안 되고,
+    /// 고정한 갈피는 저장소 정렬이 맨 위로 올려 준다.
+    private func load() {
+        links = (try? useCases.repository.links(
+            matching: filter, includeArchived: false, limit: nil
+        )) ?? []
+    }
+
+    private func togglePin(_ link: Link) {
+        useCases.togglePin(link)
+        load()
+    }
 
     /// 같은 화면이라도 도착한 필터에 따라 '왜 비었는지'가 다르다.
     private var emptyState: (symbol: String, title: String, message: String) {
@@ -82,17 +95,13 @@ struct FilteredLinkListView: View {
 #if DEBUG
 #Preview("빈 목록 · 즐겨찾기") {
     NavigationStack {
-        FilteredLinkListView(
-            filter: .favorite, title: "즐겨찾기", useCases: .empty(), path: .constant([])
-        )
+        FilteredLinkListView(filter: .favorite, title: "즐겨찾기", useCases: .empty())
     }
 }
 
 #Preview("빈 목록 · 받은함") {
     NavigationStack {
-        FilteredLinkListView(
-            filter: .inbox, title: "받은함", useCases: .empty(), path: .constant([])
-        )
+        FilteredLinkListView(filter: .inbox, title: "받은함", useCases: .empty())
     }
 }
 #endif

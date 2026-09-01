@@ -36,6 +36,19 @@ public extension View {
     }
 }
 
+// MARK: - 리스트 행
+
+public extension View {
+
+    /// 카드·헤더처럼 `List` 의 행 배경을 쓰지 않는 행. 배경·기본 여백·구분선을 모두 걷어내
+    /// `ScrollView` 안에 있던 모습 그대로 얹는다.
+    func plainListRow(insets: EdgeInsets = EdgeInsets()) -> some View {
+        listRowBackground(Color.clear)
+            .listRowInsets(insets)
+            .listRowSeparator(.hidden)
+    }
+}
+
 // MARK: - 섹션 헤더
 
 /// `제목 [뱃지]  ⟷  액션` — 홈·보관함·내 정보가 공유하는 헤더.

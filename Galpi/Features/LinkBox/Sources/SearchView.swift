@@ -73,6 +73,7 @@ public struct SearchView: View {
 
     @State private var viewModel: SearchViewModel
     @State private var path: [LinkRoute] = []
+    @State private var deletionTarget: Link?
 
     private let useCases: GalpiUseCases
 
@@ -87,32 +88,51 @@ public struct SearchView: View {
 
     public var body: some View {
         NavigationStack(path: $path) {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 22) {
-                    if viewModel.query.trimmingCharacters(in: .whitespaces).isEmpty {
-                        tagSuggestions
-                    } else if viewModel.results.isEmpty {
-                        GalpiEmptyState(
-                            symbol: "magnifyingglass",
-                            title: "결과가 없어요",
-                            message: "제목·메모·태그·주소에서 찾아봤어요."
+            List {
+                if viewModel.query.trimmingCharacters(in: .whitespaces).isEmpty {
+                    tagSuggestions
+                        .plainListRow(
+                            insets: EdgeInsets(top: 8, leading: 16, bottom: 24, trailing: 16)
                         )
-                    } else {
-                        LinkListCard(links: viewModel.results) { path.append(.detail($0.id)) }
+                } else if viewModel.results.isEmpty {
+                    GalpiEmptyState(
+                        symbol: "magnifyingglass",
+                        title: "결과가 없어요",
+                        message: "제목·메모·태그·주소에서 찾아봤어요."
+                    )
+                    .plainListRow(
+                        insets: EdgeInsets(top: 8, leading: 16, bottom: 24, trailing: 16)
+                    )
+                } else {
+                    ForEach(viewModel.results) { link in
+                        LinkListRow(link: link, onTogglePin: togglePin) { deletionTarget = $0 }
                     }
                 }
-                .padding(.horizontal, 16)
-                .padding(.bottom, 24)
             }
+            .listStyle(.insetGrouped)
+            .scrollContentBackground(.hidden)
             .scrollIndicators(.hidden)
             .background(GalpiColor.background)
             .navigationTitle("검색")
             .navigationDestination(for: LinkRoute.self) { route in
-                LinkRouteView(route: route, useCases: useCases, path: $path)
+                LinkRouteView(route: route, useCases: useCases)
             }
+            .linkDeleteConfirmation(
+                target: $deletionTarget,
+                useCases: useCases,
+                onDeleted: viewModel.load
+            )
         }
         .searchable(text: $viewModel.query, prompt: "제목·메모·태그로 찾기")
         .onAppear { viewModel.load() }
+    }
+
+    // MARK: - Function
+
+    /// 고정 순서는 저장소가 매기므로 토글 뒤 다시 읽는다.
+    private func togglePin(_ link: Link) {
+        useCases.togglePin(link)
+        viewModel.load()
     }
 
     private var tagSuggestions: some View {

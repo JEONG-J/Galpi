@@ -105,7 +105,7 @@ public struct LibraryView: View {
                 }
             }
             .navigationDestination(for: LinkRoute.self) { route in
-                LinkRouteView(route: route, useCases: useCases, path: $path)
+                LinkRouteView(route: route, useCases: useCases)
             }
         }
         .onAppear { viewModel.load() }

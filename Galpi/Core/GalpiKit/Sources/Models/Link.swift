@@ -49,6 +49,10 @@ public final class Link {
 
     public var isArchived: Bool = false
 
+    /// 목록 맨 위에 붙잡아 두는 갈피. 즐겨찾기(`isFavorite`)는 보관함 스마트 리스트라
+    /// 의미가 달라 플래그를 따로 둔다.
+    public var isPinned: Bool = false
+
     /// `nil` 이면 "받은함"(폴더 미지정) 이다 — 받은함은 별도 레코드가 아니다.
     public var folder: Folder?
 
@@ -70,6 +74,7 @@ public final class Link {
         lastViewedAt: Date? = nil,
         isFavorite: Bool = false,
         isArchived: Bool = false,
+        isPinned: Bool = false,
         folder: Folder? = nil,
         tags: [Tag]? = nil
     ) {
@@ -85,6 +90,7 @@ public final class Link {
         self.lastViewedAt = lastViewedAt
         self.isFavorite = isFavorite
         self.isArchived = isArchived
+        self.isPinned = isPinned
         self.folder = folder
         self.tags = tags
     }

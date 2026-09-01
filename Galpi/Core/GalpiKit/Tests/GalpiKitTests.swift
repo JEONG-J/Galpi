@@ -196,6 +196,59 @@ struct RecordLinkVisitTests {
     }
 }
 
+// MARK: - 목록 정렬
+
+@MainActor
+@Suite("링크 목록 정렬")
+struct LinkOrderingTests {
+
+    @Test("고정한 갈피가 더 최신 갈피보다 앞에 오고, 고정끼리는 최신순이다")
+    func pinnedLinksComeFirst() throws {
+        let repository = try makeRepository()
+
+        func insert(_ host: String, at iso: String, isPinned: Bool = false) {
+            repository.insert(
+                Link(urlString: "https://\(host).com", createdAt: date(iso), isPinned: isPinned)
+            )
+        }
+
+        insert("newest", at: "2026-08-30T00:00:00Z")
+        insert("pinned-old", at: "2026-08-01T00:00:00Z", isPinned: true)
+        insert("middle", at: "2026-08-20T00:00:00Z")
+        insert("pinned-new", at: "2026-08-10T00:00:00Z", isPinned: true)
+        try repository.save()
+
+        let links = try repository.links(matching: .all, includeArchived: false, limit: nil)
+        #expect(
+            links.map(\.urlString) == [
+                "https://pinned-new.com",
+                "https://pinned-old.com",
+                "https://newest.com",
+                "https://middle.com",
+            ]
+        )
+    }
+
+    @Test("고정을 풀면 다시 최신순 자리로 돌아간다")
+    func unpinningRestoresRecencyOrder() throws {
+        let repository = try makeRepository()
+        let pinned = Link(
+            urlString: "https://old.com", createdAt: date("2026-08-01T00:00:00Z"), isPinned: true
+        )
+        repository.insert(pinned)
+        repository.insert(
+            Link(urlString: "https://new.com", createdAt: date("2026-08-30T00:00:00Z"))
+        )
+        try repository.save()
+
+        pinned.isPinned = false
+        try repository.save()
+
+        let links = try repository.links(matching: .all, includeArchived: false, limit: nil)
+        #expect(links.map(\.urlString) == ["https://new.com", "https://old.com"])
+    }
+}
+
 // MARK: - 폴더
 
 @MainActor
