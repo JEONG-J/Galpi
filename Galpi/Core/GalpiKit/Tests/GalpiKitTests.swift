@@ -16,6 +16,15 @@ private func makeRepository() throws -> SwiftDataLinkRepository {
     SwiftDataLinkRepository(container: try GalpiModelContainer.makeInMemory())
 }
 
+/// 테스트마다 빈 suite 를 써서 실제 App Group 설정값을 건드리지 않는다.
+@MainActor
+private func makeSettings() -> GalpiSettings {
+    let suiteName = "galpi.tests.\(UUID().uuidString)"
+    let defaults = UserDefaults(suiteName: suiteName)!
+    defaults.removePersistentDomain(forName: suiteName)
+    return GalpiSettings(defaults: defaults)
+}
+
 /// 시각 계산 테스트가 실행 지역·서머타임에 흔들리지 않게 UTC 로 고정한다.
 private var fixedCalendar: Calendar {
     var calendar = Calendar(identifier: .gregorian)
@@ -196,7 +205,7 @@ struct ManageFolderUseCaseTests {
     @Test("폴더를 지워도 링크는 받은함으로 남는다")
     func deletingFolderKeepsLinks() throws {
         let repository = try makeRepository()
-        let folders = DefaultManageFolderUseCase(repository: repository)
+        let folders = DefaultManageFolderUseCase(repository: repository, settings: makeSettings())
 
         let folderID = try folders.create(name: "개발", color: .purple, iconName: "chevron.left.forwardslash.chevron.right")
         _ = try DefaultSaveLinkUseCase(repository: repository)
@@ -215,7 +224,7 @@ struct ManageFolderUseCaseTests {
     @Test("재정렬하면 sortOrder 가 인자 순서대로 다시 매겨진다")
     func reordersFolders() throws {
         let repository = try makeRepository()
-        let useCase = DefaultManageFolderUseCase(repository: repository)
+        let useCase = DefaultManageFolderUseCase(repository: repository, settings: makeSettings())
 
         let a = try useCase.create(name: "A", color: .red, iconName: "folder")
         let b = try useCase.create(name: "B", color: .blue, iconName: "folder")
@@ -223,6 +232,37 @@ struct ManageFolderUseCaseTests {
 
         try useCase.reorder(orderedIDs: [c, a, b])
         #expect(try repository.folders().map(\.name) == ["C", "A", "B"])
+    }
+
+    @Test("기본 저장 폴더는 삭제되지 않는다")
+    func refusesToDeleteDefaultFolder() throws {
+        let repository = try makeRepository()
+        let settings = makeSettings()
+        let useCase = DefaultManageFolderUseCase(repository: repository, settings: settings)
+
+        let folderID = try useCase.create(name: "읽을거리", color: .blue, iconName: "folder")
+        settings.defaultFolderID = folderID
+
+        #expect(throws: ManageFolderError.self) {
+            try useCase.delete(folderID: folderID)
+        }
+        #expect(try repository.folders().map(\.id) == [folderID])
+        // 죽은 UUID 가 남지 않도록 설정값도 그대로여야 한다.
+        #expect(settings.defaultFolderID == folderID)
+    }
+
+    @Test("기본 폴더가 아니면 그대로 삭제된다")
+    func deletesNonDefaultFolder() throws {
+        let repository = try makeRepository()
+        let settings = makeSettings()
+        let useCase = DefaultManageFolderUseCase(repository: repository, settings: settings)
+
+        let defaultFolderID = try useCase.create(name: "읽을거리", color: .blue, iconName: "folder")
+        let otherID = try useCase.create(name: "레시피", color: .green, iconName: "folder")
+        settings.defaultFolderID = defaultFolderID
+
+        try useCase.delete(folderID: otherID)
+        #expect(try repository.folders().map(\.id) == [defaultFolderID])
     }
 }
 

@@ -24,6 +24,8 @@ final class LibraryViewModel {
     private(set) var inboxCount = 0
 
     var isEditingFolders = false
+    /// 삭제가 거절된 사유. `nil` 이 아니면 보관함 alert 로 뜬다.
+    var folderDeleteFailure: String?
 
     // MARK: - Function
 
@@ -42,8 +44,17 @@ final class LibraryViewModel {
     }
 
     func delete(_ folder: Folder) {
-        try? useCases.manageFolder.delete(folderID: folder.id)
-        load()
+        do {
+            try useCases.manageFolder.delete(folderID: folder.id)
+            load()
+        } catch {
+            folderDeleteFailure = [
+                error.localizedDescription,
+                (error as? LocalizedError)?.recoverySuggestion
+            ]
+            .compactMap { $0 }
+            .joined(separator: "\n\n")
+        }
     }
 }
 
@@ -95,6 +106,11 @@ public struct LibraryView: View {
         .onAppear { viewModel.load() }
         .sheet(item: $editingFolder) { target in
             FolderEditorView(target: target, useCases: useCases) { viewModel.load() }
+        }
+        .alert("폴더를 삭제할 수 없어요", isPresented: folderDeleteFailureBinding) {
+            Button("확인", role: .cancel) {}
+        } message: {
+            Text(viewModel.folderDeleteFailure ?? "")
         }
     }
 
@@ -244,5 +260,12 @@ public struct LibraryView: View {
                 }
             }
         }
+    }
+
+    private var folderDeleteFailureBinding: Binding<Bool> {
+        Binding(
+            get: { viewModel.folderDeleteFailure != nil },
+            set: { if !$0 { viewModel.folderDeleteFailure = nil } }
+        )
     }
 }
