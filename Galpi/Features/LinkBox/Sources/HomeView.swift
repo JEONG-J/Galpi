@@ -88,16 +88,12 @@ public struct HomeView: View {
         NavigationStack(path: $path) {
             ScrollView {
                 VStack(alignment: .leading, spacing: 26) {
-                    Text("갈피")
-                        .font(GalpiFont.largeTitle)
-                        .kerning(-0.8)
-                        .foregroundStyle(GalpiColor.text)
-
                     unreadSection
                     weeklyStatCard
                     recentSection
                 }
                 .padding(.horizontal, 16)
+                .padding(.top, 8)
                 .padding(.bottom, 24 + GalpiTabBar.contentBottomInset)
             }
             .scrollIndicators(.hidden)
