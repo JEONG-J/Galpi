@@ -88,21 +88,16 @@ public struct HomeView: View {
         NavigationStack(path: $path) {
             ScrollView {
                 VStack(alignment: .leading, spacing: 26) {
-                    Text("갈피")
-                        .font(GalpiFont.largeTitle)
-                        .kerning(-0.8)
-                        .foregroundStyle(GalpiColor.text)
-
                     unreadSection
                     weeklyStatCard
                     recentSection
                 }
                 .padding(.horizontal, 16)
-                .padding(.bottom, 24 + GalpiTabBar.contentBottomInset)
+                .padding(.bottom, 24)
             }
             .scrollIndicators(.hidden)
             .background(GalpiColor.background)
-            .navigationBarHidden(true)
+            .navigationTitle("갈피")
             .navigationDestination(for: LinkRoute.self) { route in
                 LinkRouteView(route: route, useCases: useCases, path: $path)
             }

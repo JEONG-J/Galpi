@@ -124,9 +124,9 @@ struct LinkDetailView: View {
         .navigationTitle("링크 노트")
         .toolbarTitleDisplayMode(.inline)
         .toolbar { toolbarMenu }
-        .safeAreaInset(edge: .bottom) { bottomBar }
+        .safeAreaBar(edge: .bottom) { bottomBar }
         // 시안 ④ 는 하단이 '원문 열기' 버튼이라 탭 바가 없다.
-        .galpiHidesTabBar()
+        .toolbar(.hidden, for: .tabBar)
         .onAppear { viewModel.load() }
         .confirmationDialog(
             "이 갈피를 삭제할까요?",
@@ -282,9 +282,7 @@ struct LinkDetailView: View {
             viewModel.openOriginal(using: openURL)
         }
         .padding(.horizontal, 16)
-        .padding(.top, 10)
-        .padding(.bottom, 12)
-        .background(GalpiColor.background)
+        .padding(.vertical, 10)
     }
 
     @ToolbarContentBuilder

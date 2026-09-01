@@ -113,12 +113,6 @@ public struct ProfileView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 22) {
-                    Text("내 정보")
-                        .font(GalpiFont.largeTitle)
-                        .kerning(-0.8)
-                        .foregroundStyle(GalpiColor.text)
-                        .padding(.top, 8)
-
                     profileCard
                     weeklyCard
 
@@ -135,11 +129,11 @@ public struct ProfileView: View {
                         .frame(maxWidth: .infinity, alignment: .center)
                 }
                 .padding(.horizontal, 16)
-                .padding(.bottom, 24 + GalpiTabBar.contentBottomInset)
+                .padding(.bottom, 24)
             }
             .background(GalpiColor.background)
             .scrollIndicators(.hidden)
-            .toolbar(.hidden, for: .navigationBar)
+            .navigationTitle("내 정보")
         }
         .onAppear { viewModel.load() }
     }

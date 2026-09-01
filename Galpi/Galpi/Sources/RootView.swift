@@ -11,55 +11,45 @@ import LinkBoxPresentation
 import SettingsPresentation
 import SwiftUI
 
-/// 4개 탭 루트 — 시안 ①·② 하단 탭 바.
+/// 4개 탭 루트 — 시스템 탭 바(Liquid Glass)에 화면만 꽂는다.
 struct RootView: View {
 
     // MARK: - Property
 
     let useCases: GalpiUseCases
 
-    @State private var selection = Tab.home.rawValue
+    @State private var selection: RootTab = .home
     @State private var deepLink: GalpiDeepLink?
-    @State private var isTabBarHidden = false
     @Environment(\.scenePhase) private var scenePhase
 
-    private enum Tab: Int, CaseIterable {
-        case home, search, library, profile
-
-        var item: GalpiTabItem {
-            switch self {
-            case .home: GalpiTabItem(id: rawValue, title: "홈", symbol: "house.fill")
-            case .search: GalpiTabItem(id: rawValue, title: "검색", symbol: "magnifyingglass")
-            case .library: GalpiTabItem(id: rawValue, title: "보관함", symbol: "folder.fill")
-            case .profile: GalpiTabItem(id: rawValue, title: "내 정보", symbol: "person.fill")
-            }
-        }
+    private enum RootTab: Hashable {
+        case home, library, profile, search
     }
 
     // MARK: - Body
 
     var body: some View {
-        ZStack(alignment: .bottom) {
-            switch Tab(rawValue: selection) ?? .home {
-            case .home: HomeView(useCases: useCases, deepLink: $deepLink)
-            case .search: SearchView(useCases: useCases)
-            case .library: LibraryView(useCases: useCases)
-            case .profile: ProfileView(useCases: useCases)
+        TabView(selection: $selection) {
+            Tab("홈", systemImage: "house.fill", value: .home) {
+                HomeView(useCases: useCases, deepLink: $deepLink)
             }
-
-            if !isTabBarHidden {
-                GalpiTabBar(items: Tab.allCases.map(\.item), selection: $selection)
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
+            Tab("보관함", systemImage: "folder.fill", value: .library) {
+                LibraryView(useCases: useCases)
+            }
+            Tab("내 정보", systemImage: "person.fill", value: .profile) {
+                ProfileView(useCases: useCases)
+            }
+            // search role 탭은 시스템이 탭 바 오른쪽 끝에 따로 떼어 놓고 검색 필드로
+            // 모핑시킨다. 그 자리가 고정이라 코드 순서도 맨 뒤에 둔다.
+            Tab("검색", systemImage: "magnifyingglass", value: .search, role: .search) {
+                SearchView(useCases: useCases)
             }
         }
-        .onPreferenceChange(GalpiTabBarHiddenKey.self) { isHidden in
-            withAnimation(.snappy(duration: 0.2)) { isTabBarHidden = isHidden }
-        }
-        .background(GalpiColor.background)
-        .ignoresSafeArea(.keyboard, edges: .bottom)
+        .tabBarMinimizeBehavior(.onScrollDown)
+        .tint(GalpiColor.main)
         .onOpenURL { url in
             guard let link = GalpiDeepLink(url: url) else { return }
-            selection = Tab.home.rawValue
+            selection = .home
             deepLink = link
         }
         .onChange(of: scenePhase) { _, phase in

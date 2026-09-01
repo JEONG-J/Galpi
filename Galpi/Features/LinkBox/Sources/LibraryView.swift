@@ -73,21 +73,16 @@ public struct LibraryView: View {
         NavigationStack(path: $path) {
             ScrollView {
                 VStack(alignment: .leading, spacing: 22) {
-                    Text("보관함")
-                        .font(GalpiFont.largeTitle)
-                        .kerning(-0.8)
-                        .foregroundStyle(GalpiColor.text)
-
                     smartLists
                     folderSection
                     tagSection
                 }
                 .padding(.horizontal, 16)
-                .padding(.bottom, 24 + GalpiTabBar.contentBottomInset)
+                .padding(.bottom, 24)
             }
             .scrollIndicators(.hidden)
             .background(GalpiColor.background)
-            .navigationBarHidden(true)
+            .navigationTitle("보관함")
             .navigationDestination(for: LinkRoute.self) { route in
                 LinkRouteView(route: route, useCases: useCases, path: $path)
             }
