@@ -6,7 +6,5 @@ let workspace = Workspace(
         ".",
         "Core/*",
         "Features/*",
-        "GalpiWidget",
-        "GalpiWatchApp",
     ]
 )
