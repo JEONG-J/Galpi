@@ -33,9 +33,9 @@ struct FilteredLinkListView: View {
                     title: emptyState.title,
                     message: emptyState.message
                 )
-                .listRowBackground(Color.clear)
-                .listRowInsets(EdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16))
-                .listRowSeparator(.hidden)
+                .plainListRow(
+                    insets: EdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16)
+                )
             } else {
                 ForEach(links) { link in
                     LinkListRow(link: link, onTogglePin: togglePin) { deletionTarget = $0 }
