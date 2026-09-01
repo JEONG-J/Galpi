@@ -94,6 +94,7 @@ public struct LibraryView: View {
             .scrollIndicators(.hidden)
             .background(GalpiColor.background)
             .navigationTitle("보관함")
+            .navigationBarTitleDisplayMode(.inline)
             .navigationDestination(for: LinkRoute.self) { route in
                 LinkRouteView(route: route, useCases: useCases, path: $path)
             }
