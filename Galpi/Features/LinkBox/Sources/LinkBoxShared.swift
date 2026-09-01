@@ -13,6 +13,23 @@ import SwiftUI
 /// 여기 한 줄로 모듈 전체에서 `Link` 를 도메인 모델로 고정한다.
 typealias Link = GalpiKit.Link
 
+// MARK: - 상수
+
+fileprivate enum Constants {
+
+    /// 링크 행 썸네일 한 변 — Dynamic Type 배율이 얹힌다.
+    static let thumbnailSize: CGFloat = 44
+
+    /// 썸네일과 제목 사이 간격.
+    static let thumbnailSpacing: CGFloat = 12
+
+    /// 링크 행의 좌우 여백 — `List` 의 `listRowInsets` 가 쓴다.
+    static let rowHorizontalInset: CGFloat = 14
+
+    /// 링크 행의 상하 여백.
+    static let rowVerticalInset: CGFloat = 11
+}
+
 // MARK: - 표시 형식
 
 enum LinkFormat {
@@ -115,20 +132,30 @@ struct UnreadLinkCard: View {
 
 // MARK: - 링크 행
 
-/// '최근 저장' 리스트와 검색 결과가 함께 쓰는 행 — 썸네일 44pt.
+/// '최근 저장' 리스트와 검색 결과가 함께 쓰는 `List` 행 본문.
+///
+/// 좌우·상하 여백은 행이 직접 갖지 않는다 — `List` 가 `listRowInsets` 로 잡아야
+/// 구분선 inset 과 스와이프 영역이 행 크기와 어긋나지 않는다.
 struct LinkRow: View {
+
+    // MARK: - Property
 
     let link: Link
 
+    // 최대 배율에서 제목 두 줄이 썸네일보다 커지면 행이 어긋난다. 썸네일도 같이 키운다.
+    @ScaledMetric(relativeTo: .body) private var thumbnailSize = Constants.thumbnailSize
+
+    // MARK: - Body
+
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: Constants.thumbnailSpacing) {
             GalpiThumbnail(
                 imageData: link.thumbnailData,
                 symbol: link.glyphSymbol,
                 cornerRadius: 13,
                 glyphSize: 20
             )
-            .frame(width: 44, height: 44)
+            .frame(width: thumbnailSize, height: thumbnailSize)
             .background(link.pastel.background, in: .rect(cornerRadius: 13))
 
             VStack(alignment: .leading, spacing: 3) {
@@ -156,14 +183,7 @@ struct LinkRow: View {
                     .frame(width: 8, height: 8)
                     .accessibilityHidden(true)
             }
-
-            Image(systemName: "chevron.right")
-                .font(.system(size: 13, weight: .semibold))
-                .foregroundStyle(GalpiColor.textTertiary)
         }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 11)
-        .contentShape(.rect)
         .accessibilityElement(children: .combine)
         .accessibilityLabel(
             "\(link.displayTitle), \(LinkFormat.host(link)), \(LinkFormat.folderName(link))"
@@ -183,8 +203,13 @@ struct LinkListCard: View {
     var body: some View {
         VStack(spacing: 0) {
             ForEach(Array(links.enumerated()), id: \.element.id) { index, link in
-                Button { onSelect(link) } label: { LinkRow(link: link) }
-                    .buttonStyle(.plain)
+                Button { onSelect(link) } label: {
+                    LinkRow(link: link)
+                        .padding(.horizontal, Constants.rowHorizontalInset)
+                        .padding(.vertical, Constants.rowVerticalInset)
+                        .contentShape(.rect)
+                }
+                .buttonStyle(.plain)
 
                 if index < links.count - 1 {
                     GalpiSeparator(leadingInset: 70)
