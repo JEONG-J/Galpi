@@ -60,8 +60,9 @@
 | ⚙️ 빌드 & 실행 | [AppName/MAKEFILE_GUIDE.md](AppName/MAKEFILE_GUIDE.md) |
 | 🔀 Git 워크플로우 | [git-workflow.md](docs/claude/git-workflow.md) |
 | 🔍 PR 리뷰 | [pr-review.md](docs/claude/pr-review.md) |
-| 🍎 iOS 26 프레임워크 | [ios26-frameworks/INDEX.md](docs/claude/ios26-frameworks/INDEX.md) |
+| 🍎 Apple 프레임워크 · 스킬팩 | [apple-frameworks/INDEX.md](docs/claude/apple-frameworks/INDEX.md) |
 | 🛰️ OpenAPI 스캐폴딩 | [SWAGGER_AUTOMATION_GUIDE.md](docs/openapi/SWAGGER_AUTOMATION_GUIDE.md) |
+| 📝 기획·설계 문서 | [docs/specs/](docs/specs/) (설계·PRD) · `docs/plans/`(구현 계획) · `docs/server/`(서버 명세) |
 
 > 신규 합류자는 **빌드 & 실행** → **아키텍처** → **절대 규칙** 순서로 시작하세요.
 
