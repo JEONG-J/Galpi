@@ -106,7 +106,7 @@ public struct HomeView: View {
             .background(GalpiColor.background)
             .toolbar(.hidden, for: .navigationBar)
             .navigationDestination(for: LinkRoute.self) { route in
-                LinkRouteView(route: route, useCases: useCases, path: $path)
+                LinkRouteView(route: route, useCases: useCases)
             }
         }
         .onAppear { viewModel.load() }
@@ -234,14 +234,13 @@ struct LinkRouteView: View {
 
     let route: LinkRoute
     let useCases: GalpiUseCases
-    @Binding var path: [LinkRoute]
 
     var body: some View {
         switch route {
         case .detail(let id):
             LinkDetailView(linkID: id, useCases: useCases)
         case .filtered(let filter, let title):
-            FilteredLinkListView(filter: filter, title: title, useCases: useCases, path: $path)
+            FilteredLinkListView(filter: filter, title: title, useCases: useCases)
         }
     }
 }

@@ -95,7 +95,7 @@ public struct LibraryView: View {
             .background(GalpiColor.background)
             .navigationTitle("보관함")
             .navigationDestination(for: LinkRoute.self) { route in
-                LinkRouteView(route: route, useCases: useCases, path: $path)
+                LinkRouteView(route: route, useCases: useCases)
             }
         }
         .onAppear { viewModel.load() }

@@ -108,7 +108,7 @@ public struct SearchView: View {
             .background(GalpiColor.background)
             .navigationTitle("검색")
             .navigationDestination(for: LinkRoute.self) { route in
-                LinkRouteView(route: route, useCases: useCases, path: $path)
+                LinkRouteView(route: route, useCases: useCases)
             }
         }
         .searchable(text: $viewModel.query, prompt: "제목·메모·태그로 찾기")

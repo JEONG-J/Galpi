@@ -31,7 +31,7 @@ public protocol LinkRepository: AnyObject {
 
     // MARK: - Read
 
-    /// 최신순 정렬. `limit` 이 `nil` 이면 전부 가져온다.
+    /// 고정된 갈피가 먼저, 그 안에서 최신순. `limit` 이 `nil` 이면 전부 가져온다.
     func links(matching filter: LinkFilter, includeArchived: Bool, limit: Int?) throws -> [Link]
     func count(matching filter: LinkFilter) throws -> Int
     func link(id: UUID) throws -> Link?
@@ -115,6 +115,11 @@ public final class SwiftDataLinkRepository: LinkRepository {
         case .all, .unread, .favorite:
             break
         }
+
+        // 고정한 갈피는 언제 저장했든 맨 위에 붙잡아 둔다. `SortDescriptor` 는 Bool 키패스를
+        // 받지 못해(NSObject 전용) 최신순으로 받아 온 뒤 고정만 앞으로 당긴다 —
+        // 두 갈래 모두 원래 순서를 지키므로 그룹 안의 최신순은 그대로다.
+        results = results.filter(\.isPinned) + results.filter { !$0.isPinned }
 
         if let limit { results = Array(results.prefix(limit)) }
         return results

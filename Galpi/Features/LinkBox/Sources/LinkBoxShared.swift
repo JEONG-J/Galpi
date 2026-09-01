@@ -177,6 +177,13 @@ struct LinkRow: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
+            if link.isPinned {
+                Image(systemName: "pin.fill")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(GalpiColor.main)
+                    .accessibilityHidden(true)
+            }
+
             if link.isUnread {
                 Circle()
                     .fill(GalpiColor.main)
@@ -187,6 +194,7 @@ struct LinkRow: View {
         .accessibilityElement(children: .combine)
         .accessibilityLabel(
             "\(link.displayTitle), \(LinkFormat.host(link)), \(LinkFormat.folderName(link))"
+                + (link.isPinned ? ", 상단 고정됨" : "")
                 + (link.isUnread ? ", 안 읽음" : "")
         )
     }
@@ -195,6 +203,8 @@ struct LinkRow: View {
 // MARK: - 링크 리스트 카드
 
 /// 여러 `LinkRow` 를 흰 카드 하나로 묶고 사이에 구분선을 넣는다.
+///
+/// - Note: `List` 로 옮겨 가는 중간 형태다. 홈까지 전환이 끝나면 사라진다.
 struct LinkListCard: View {
 
     let links: [Link]
@@ -217,5 +227,100 @@ struct LinkListCard: View {
             }
         }
         .galpiCard(cornerRadius: 20)
+    }
+}
+
+// MARK: - 링크 목록 행
+
+/// `List` 안의 링크 한 줄 — 탭하면 상세, 왼쪽 스와이프는 상단 고정, 오른쪽 스와이프는 삭제.
+///
+/// 스와이프는 VoiceOver 로 닿지 않으므로 같은 두 동작을 커스텀 액션으로도 연다.
+struct LinkListRow: View {
+
+    // MARK: - Property
+
+    let link: Link
+    let onTogglePin: (Link) -> Void
+    let onDelete: (Link) -> Void
+
+    // MARK: - Body
+
+    var body: some View {
+        NavigationLink(value: LinkRoute.detail(link.id)) {
+            LinkRow(link: link)
+        }
+        .listRowBackground(GalpiColor.surface)
+        .listRowInsets(
+            EdgeInsets(
+                top: Constants.rowVerticalInset,
+                leading: Constants.rowHorizontalInset,
+                bottom: Constants.rowVerticalInset,
+                trailing: Constants.rowHorizontalInset
+            )
+        )
+        // 시안의 `GalpiSeparator(leadingInset: 70)` 자리 — 썸네일 오른쪽에서 선이 시작한다.
+        .alignmentGuide(.listRowSeparatorLeading) { _ in
+            Constants.thumbnailSize + Constants.thumbnailSpacing
+        }
+        .swipeActions(edge: .trailing) {
+            Button(role: .destructive) { onDelete(link) } label: {
+                Label("삭제", systemImage: "trash")
+            }
+        }
+        .swipeActions(edge: .leading) {
+            Button { onTogglePin(link) } label: {
+                Label(pinActionTitle, systemImage: link.isPinned ? "pin.slash" : "pin.fill")
+            }
+            .tint(GalpiColor.main)
+        }
+        .accessibilityAction(named: pinActionTitle) { onTogglePin(link) }
+        .accessibilityAction(named: "삭제") { onDelete(link) }
+    }
+
+    // MARK: - Function
+
+    private var pinActionTitle: String { link.isPinned ? "고정 해제" : "상단 고정" }
+}
+
+// MARK: - 행 동작
+
+@MainActor
+extension GalpiUseCases {
+
+    /// 상단 고정 토글 — 링크 목록을 띄우는 화면들이 함께 쓴다.
+    func togglePin(_ link: Link) {
+        link.isPinned.toggle()
+        try? repository.save()
+    }
+}
+
+@MainActor
+extension View {
+
+    /// 스와이프 삭제가 부르는 확인 다이얼로그. 지운 뒤 `onDeleted` 로 목록 갱신을 알린다.
+    ///
+    /// 문구·형태는 상세 화면(`LinkDetailView`)의 삭제 확인과 같다.
+    func linkDeleteConfirmation(
+        target: Binding<Link?>,
+        useCases: GalpiUseCases,
+        onDeleted: @escaping () -> Void
+    ) -> some View {
+        confirmationDialog(
+            "이 갈피를 삭제할까요?",
+            isPresented: Binding(
+                get: { target.wrappedValue != nil },
+                set: { if !$0 { target.wrappedValue = nil } }
+            ),
+            titleVisibility: .visible
+        ) {
+            Button("삭제", role: .destructive) {
+                guard let link = target.wrappedValue else { return }
+                useCases.repository.delete(link)
+                try? useCases.repository.save()
+                target.wrappedValue = nil
+                onDeleted()
+            }
+            Button("취소", role: .cancel) { target.wrappedValue = nil }
+        }
     }
 }
