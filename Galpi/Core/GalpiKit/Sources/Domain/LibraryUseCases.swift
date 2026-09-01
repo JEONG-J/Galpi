@@ -91,9 +91,25 @@ public struct WeeklyReport: Equatable, Sendable {
     /// 링크를 하나라도 읽은 날이 오늘부터 연속 며칠인지.
     public let streakDays: Int
 
+    public init(
+        savedCount: Int,
+        readCount: Int,
+        dailyReadCounts: [Int],
+        previousWeekReadCount: Int,
+        streakDays: Int
+    ) {
+        self.savedCount = savedCount
+        self.readCount = readCount
+        self.dailyReadCounts = dailyReadCounts
+        self.previousWeekReadCount = previousWeekReadCount
+        self.streakDays = streakDays
+    }
+
     /// 이번 주 저장분 중 읽은 비율. 저장이 0이면 0.
+    ///
+    /// 지난주에 저장해 이번 주에 읽은 링크가 있으면 읽음이 저장을 넘길 수 있어 1로 자른다.
     public var consumptionRate: Double {
-        savedCount == 0 ? 0 : Double(readCount) / Double(savedCount)
+        savedCount == 0 ? 0 : min(Double(readCount) / Double(savedCount), 1)
     }
 
     public var readCountDelta: Int { readCount - previousWeekReadCount }
