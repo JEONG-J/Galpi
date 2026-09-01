@@ -93,11 +93,12 @@ public struct HomeView: View {
                     recentSection
                 }
                 .padding(.horizontal, 16)
+                .padding(.top, 8)
                 .padding(.bottom, 24)
             }
             .scrollIndicators(.hidden)
             .background(GalpiColor.background)
-            .navigationTitle("갈피")
+            .toolbar(.hidden, for: .navigationBar)
             .navigationDestination(for: LinkRoute.self) { route in
                 LinkRouteView(route: route, useCases: useCases, path: $path)
             }
