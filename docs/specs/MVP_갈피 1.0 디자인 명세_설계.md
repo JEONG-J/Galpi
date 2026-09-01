@@ -24,10 +24,13 @@ iOS 26 기본 룩 + Liquid Glass를 그대로 쓴다. 콘텐츠(썸네일·제�
 | 배경 | 홈(plain 리스트) `systemBackground` · 설정/시트 `systemGroupedBackground` | 화면 배경 |
 | 텍스트 | `label` / `secondaryLabel` / `tertiaryLabel` | 제목 / 메타 / 플레이스홀더 |
 | **틴트(브랜드)** | **인디고 계열 1색** (`#5B5BD6` 근방, 다크 `#7B7BE8`) | 미열람 점 · 선택 칩 · Primary 버튼 · 앱 아이콘 리본 |
-| 카테고리 팔레트 | 시스템 12색 (red·orange·yellow·green·mint·teal·cyan·blue·indigo·purple·pink·brown) | 카테고리 색 선택지 — 커스텀 색 없음 |
+| 카테고리 팔레트 | 시스템 12색 (red·orange·yellow·green·mint·teal·cyan·blue·indigo·purple·pink·brown) + 커스텀 색 | 카테고리 색 선택지. 12색으로 모자라면 `ColorPicker` 로 직접 고른다 |
 
 - 브랜드 색은 **하나**다. 성공/경고 등 상태색은 시스템 시맨틱(`systemGreen`/`systemRed`) 그대로.
 - 다크 모드는 시맨틱 컬러가 자동 처리 — 커스텀 다크 팔레트 없음.
+- 커스텀 카테고리 색은 `#RRGGBB` 로 `Folder.colorName` 에 그대로 담는다(12색과 같은 필드).
+  배지 배경은 고른 색을 흰색과 12%로 섞어 12색과 같은 톤으로 파생하고, 밝은 색을 골라도
+  아이콘이 묻히지 않도록 전경은 대비 3:1(WCAG 큰 텍스트)을 넘을 때까지 어둡게 죈다.
 
 ## 3. 타이포그래피
 
