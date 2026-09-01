@@ -52,6 +52,9 @@ final class ProfileViewModel {
 
     var consumptionPercent: Int { Int((report?.consumptionRate ?? 0) * 100) }
 
+    /// 이번 주에 읽은 기록이 하나라도 있는지. 없으면 0 막대만 그리는 대신 빈 상태를 보여준다.
+    var hasReadRecord: Bool { (report?.dailyReadCounts ?? []).contains { $0 > 0 } }
+
     /// 시안 문구의 '상위 N%' 는 비교할 모수가 기기 안에 없어 쓰지 않는다.
     var weeklySummary: String {
         guard let report, report.savedCount > 0 || report.readCount > 0 else {
@@ -180,7 +183,20 @@ public struct ProfileView: View {
 
     // MARK: - Weekly
 
+    @ViewBuilder
     private var weeklyCard: some View {
+        if viewModel.hasReadRecord {
+            weeklyChartCard
+        } else {
+            GalpiEmptyState(
+                symbol: "chart.bar",
+                title: "주간 리포트가 아직 비어 있어요",
+                message: "갈피를 하나만 읽어도 요일별 기록이 여기에 쌓여요."
+            )
+        }
+    }
+
+    private var weeklyChartCard: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Text("주간 리포트")
@@ -467,3 +483,9 @@ private struct GalpiMascot: View {
             .frame(width: 7, height: 5)
     }
 }
+
+#if DEBUG
+#Preview("데이터 0건") {
+    ProfileView(useCases: .empty())
+}
+#endif

@@ -194,31 +194,3 @@ struct LinkListCard: View {
         .galpiCard(cornerRadius: 20)
     }
 }
-
-// MARK: - 빈 상태
-
-/// 시안에는 없지만 실제 첫 실행에서 반드시 지나가는 화면.
-struct LinkBoxEmptyState: View {
-
-    let symbol: String
-    let title: String
-    let message: String
-
-    var body: some View {
-        VStack(spacing: 10) {
-            Image(systemName: symbol)
-                .font(.system(size: 34, weight: .regular))
-                .foregroundStyle(GalpiColor.glyph)
-            Text(title)
-                .font(GalpiFont.text(15, .bold))
-                .foregroundStyle(GalpiColor.text)
-            Text(message)
-                .font(GalpiFont.text(12, .medium))
-                .foregroundStyle(GalpiColor.textSecondary)
-                .multilineTextAlignment(.center)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 34)
-        .galpiCard(cornerRadius: 20)
-    }
-}

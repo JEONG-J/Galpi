@@ -239,9 +239,11 @@ public struct LibraryView: View {
             GalpiSectionHeader("태그")
 
             if viewModel.tags.isEmpty {
-                Text("아직 태그가 없어요. AI 자동 정리를 켜면 저장할 때 추천 태그가 붙어요.")
-                    .font(GalpiFont.text(12, .medium))
-                    .foregroundStyle(GalpiColor.textSecondary)
+                GalpiEmptyState(
+                    symbol: "number",
+                    title: "아직 태그가 없어요",
+                    message: "내 정보에서 'AI 자동 정리'를 켜면 저장할 때 추천 태그가 붙어요."
+                )
             } else {
                 GalpiFlowLayout(spacing: 8, lineSpacing: 8) {
                     ForEach(viewModel.tags) { tag in
@@ -264,3 +266,9 @@ public struct LibraryView: View {
         )
     }
 }
+
+#if DEBUG
+#Preview("데이터 0건") {
+    LibraryView(useCases: .empty())
+}
+#endif

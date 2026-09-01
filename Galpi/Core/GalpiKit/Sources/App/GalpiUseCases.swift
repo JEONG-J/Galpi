@@ -74,3 +74,13 @@ public final class GalpiUseCases {
         )
     }
 }
+
+#if DEBUG
+public extension GalpiUseCases {
+
+    /// 프리뷰용 — 디스크에 아무것도 남기지 않는 **빈** 스토어. 빈 상태 화면을 그대로 볼 수 있다.
+    static func empty() -> GalpiUseCases {
+        GalpiUseCases(container: try! GalpiModelContainer.makeInMemory())
+    }
+}
+#endif

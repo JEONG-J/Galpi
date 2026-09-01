@@ -21,6 +21,9 @@ final class SearchViewModel {
     private(set) var results: [Link] = []
     private(set) var suggestedTags: [Tag] = []
 
+    /// 태그가 없는 이유가 '저장이 아예 없어서'인지 '태그만 안 붙어서'인지 가른다.
+    var hasSavedLinks: Bool { !allLinks.isEmpty }
+
     var query = "" {
         didSet { filter() }
     }
@@ -89,7 +92,7 @@ public struct SearchView: View {
                     if viewModel.query.trimmingCharacters(in: .whitespaces).isEmpty {
                         tagSuggestions
                     } else if viewModel.results.isEmpty {
-                        LinkBoxEmptyState(
+                        GalpiEmptyState(
                             symbol: "magnifyingglass",
                             title: "결과가 없어요",
                             message: "제목·메모·태그·주소에서 찾아봤어요."
@@ -112,11 +115,15 @@ public struct SearchView: View {
         .onAppear { viewModel.load() }
     }
 
-    @ViewBuilder
     private var tagSuggestions: some View {
-        if !viewModel.suggestedTags.isEmpty {
-            VStack(alignment: .leading, spacing: 12) {
-                GalpiSectionHeader("많이 쓴 태그")
+        VStack(alignment: .leading, spacing: 12) {
+            // 태그가 하나도 없을 때 '많이 쓴 태그'라는 제목은 어색하다.
+            GalpiSectionHeader(viewModel.suggestedTags.isEmpty ? "태그" : "많이 쓴 태그")
+
+            // 태그가 없다고 섹션을 통째로 지우면 검색창 아래가 텅 빈다.
+            if viewModel.suggestedTags.isEmpty {
+                emptyTagState
+            } else {
                 GalpiFlowLayout(spacing: 8, lineSpacing: 8) {
                     ForEach(viewModel.suggestedTags.prefix(12)) { tag in
                         Button { viewModel.query = tag.name } label: {
@@ -128,4 +135,30 @@ public struct SearchView: View {
             }
         }
     }
+
+    @ViewBuilder
+    private var emptyTagState: some View {
+        if viewModel.hasSavedLinks {
+            GalpiEmptyState(
+                symbol: "number",
+                title: "아직 붙은 태그가 없어요",
+                message: "갈피를 저장할 때 태그를 붙이면 여기서 바로 찾을 수 있어요.",
+                action: .init(title: "전체 갈피 보기") {
+                    path.append(.filtered(.all, title: "전체 갈피"))
+                }
+            )
+        } else {
+            GalpiEmptyState(
+                symbol: "magnifyingglass",
+                title: "찾을 갈피가 아직 없어요",
+                message: "공유 시트에서 '갈피'를 눌러 링크를 꽂으면 제목·메모·태그로 찾을 수 있어요."
+            )
+        }
+    }
 }
+
+#if DEBUG
+#Preview("데이터 0건") {
+    SearchView(useCases: .empty())
+}
+#endif
