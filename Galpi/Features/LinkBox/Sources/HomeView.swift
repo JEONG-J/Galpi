@@ -61,6 +61,12 @@ final class HomeViewModel {
     }
 
     var consumptionPercent: Int { Int((report.consumptionRate * 100).rounded()) }
+
+    /// 저장된 갈피가 하나라도 있는지. '최근 저장'은 최신 4건을 읽으므로 이게 비면 전체가 비어 있다.
+    var hasSavedLinks: Bool { !recentLinks.isEmpty }
+
+    /// 이번 주에 저장도 읽음도 없는 상태 — 소비율 0% 를 보여줄 이유가 없다.
+    var hasWeeklyActivity: Bool { report.savedCount > 0 || report.readCount > 0 }
 }
 
 /// 홈 탭 — 시안 ① 프레임.
@@ -123,11 +129,23 @@ public struct HomeView: View {
             GalpiSectionHeader("아직 안 읽은 갈피", badgeCount: viewModel.unreadCount)
 
             if viewModel.unreadLinks.isEmpty {
-                LinkBoxEmptyState(
-                    symbol: "checkmark.circle",
-                    title: "다 읽었어요",
-                    message: "안 읽은 갈피가 없습니다."
-                )
+                // 저장이 0건인데 '다 읽었어요'가 뜨면 완료로 오해한다. 두 상태를 갈라 놓는다.
+                if viewModel.hasSavedLinks {
+                    GalpiEmptyState(
+                        symbol: "checkmark.circle",
+                        title: "다 읽었어요",
+                        message: "안 읽은 갈피가 하나도 없어요.",
+                        action: .init(title: "전체 갈피 보기") {
+                            path.append(.filtered(.all, title: "전체 갈피"))
+                        }
+                    )
+                } else {
+                    GalpiEmptyState(
+                        symbol: "bookmark",
+                        title: "아직 갈피가 없어요",
+                        message: "읽고 싶은 글을 공유 시트에서 갈피로 보내면 여기에 쌓여요."
+                    )
+                }
             } else {
                 ScrollView(.horizontal) {
                     HStack(spacing: 12) {
@@ -149,7 +167,20 @@ public struct HomeView: View {
 
     // MARK: - 이번 주 소비율
 
+    @ViewBuilder
     private var weeklyStatCard: some View {
+        if viewModel.hasWeeklyActivity {
+            weeklyProgressCard
+        } else {
+            GalpiEmptyState(
+                symbol: "chart.bar",
+                title: "이번 주 기록이 아직 없어요",
+                message: "이번 주에 저장하거나 읽은 갈피가 생기면 소비율이 여기에 나와요."
+            )
+        }
+    }
+
+    private var weeklyProgressCard: some View {
         VStack(alignment: .leading, spacing: 11) {
             HStack {
                 Text("이번 주 소비율")
@@ -170,7 +201,9 @@ public struct HomeView: View {
         .padding(16)
         .galpiCard(cornerRadius: 20)
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("이번 주 소비율 \(viewModel.consumptionPercent)퍼센트. \(viewModel.weeklyCaption)")
+        .accessibilityLabel(
+            "이번 주 소비율 \(viewModel.consumptionPercent)퍼센트. \(viewModel.weeklyCaption)"
+        )
     }
 
     // MARK: - 최근 저장
@@ -184,10 +217,10 @@ public struct HomeView: View {
             }
 
             if viewModel.recentLinks.isEmpty {
-                LinkBoxEmptyState(
-                    symbol: "bookmark",
+                GalpiEmptyState(
+                    symbol: "tray",
                     title: "아직 꽂아둔 갈피가 없어요",
-                    message: "공유 시트에서 갈피를 눌러 첫 링크를 꽂아보세요."
+                    message: "공유 시트에서 '갈피'를 누르면 첫 링크가 여기에 꽂혀요."
                 )
             } else {
                 LinkListCard(links: viewModel.recentLinks) { path.append(.detail($0.id)) }
@@ -212,3 +245,9 @@ struct LinkRouteView: View {
         }
     }
 }
+
+#if DEBUG
+#Preview("데이터 0건") {
+    HomeView(useCases: .empty())
+}
+#endif
