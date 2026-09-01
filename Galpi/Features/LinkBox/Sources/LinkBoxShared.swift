@@ -200,36 +200,6 @@ struct LinkRow: View {
     }
 }
 
-// MARK: - 링크 리스트 카드
-
-/// 여러 `LinkRow` 를 흰 카드 하나로 묶고 사이에 구분선을 넣는다.
-///
-/// - Note: `List` 로 옮겨 가는 중간 형태다. 홈까지 전환이 끝나면 사라진다.
-struct LinkListCard: View {
-
-    let links: [Link]
-    let onSelect: (Link) -> Void
-
-    var body: some View {
-        VStack(spacing: 0) {
-            ForEach(Array(links.enumerated()), id: \.element.id) { index, link in
-                Button { onSelect(link) } label: {
-                    LinkRow(link: link)
-                        .padding(.horizontal, Constants.rowHorizontalInset)
-                        .padding(.vertical, Constants.rowVerticalInset)
-                        .contentShape(.rect)
-                }
-                .buttonStyle(.plain)
-
-                if index < links.count - 1 {
-                    GalpiSeparator(leadingInset: 70)
-                }
-            }
-        }
-        .galpiCard(cornerRadius: 20)
-    }
-}
-
 // MARK: - 링크 목록 행
 
 /// `List` 안의 링크 한 줄 — 탭하면 상세, 왼쪽 스와이프는 상단 고정, 오른쪽 스와이프는 삭제.
