@@ -199,8 +199,8 @@ featureProject(
 ```xml
 <key>keychain-access-groups</key>
 <array>
-    <string>$(AppIdentifierPrefix)com.example.galpi.shared</string>
-    <string>$(AppIdentifierPrefix)com.example.galpi</string>
+    <string>$(AppIdentifierPrefix)com.app.galpi.shared</string>
+    <string>$(AppIdentifierPrefix)com.app.galpi</string>
 </array>
 ```
 

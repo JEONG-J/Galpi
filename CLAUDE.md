@@ -6,8 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 > 주제별 상세 내용은 `docs/claude/` 로 분리되어 있으며, **필요할 때 해당 파일을 `Read` 로 열어** 참고합니다.
 > (컨텍스트 절약을 위해 `@import` 로 전체를 인라인하지 않습니다.)
 >
-> **남은 치환**: 아래 `{{ }}` 자리와 `com.example.galpi` 번들 ID 플레이스홀더를
-> 실제 값으로 채우고, 이 안내 블록은 지웁니다. 치환 대상 전체 목록은 `TEMPLATE_SETUP.md` 참고.
+> **남은 치환**: 아래 `{{ }}` 자리를 실제 값으로 채우고, 이 안내 블록은 지웁니다.
+> 치환 대상 전체 목록은 `TEMPLATE_SETUP.md` 참고. (번들 ID 는 `com.app.galpi` 로 확정됨 — #19)
 
 ## Project Overview
 

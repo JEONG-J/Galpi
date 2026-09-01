@@ -11,7 +11,7 @@ let project = Project(
             product: .app,
             // App Store 앱 레코드와 동일해야 한다. 이 값이 바뀌면 별개 앱이 되어
             // App Group·iCloud 컨테이너 식별자까지 전부 무효화된다.
-            bundleId: "com.example.galpi",
+            bundleId: "com.app.galpi",
             deploymentTargets: .iOS("26.0"),
             infoPlist: .extendingDefault(
                 with: [
@@ -25,7 +25,7 @@ let project = Project(
                     // 위젯·알림 딥링크 (`galpi://unread`, `galpi://link/{id}`) — 설계 문서 §7-③·④
                     "CFBundleURLTypes": [
                         [
-                            "CFBundleURLName": "com.example.galpi.deeplink",
+                            "CFBundleURLName": "com.app.galpi.deeplink",
                             "CFBundleURLSchemes": ["galpi"],
                         ],
                     ],
@@ -35,7 +35,7 @@ let project = Project(
                     // 시안이 라이트 전용이라 다크 팔레트가 없다. 다크 시안이 나오기 전까지 고정.
                     "UIUserInterfaceStyle": "Light",
                     "BGTaskSchedulerPermittedIdentifiers": [
-                        "com.example.galpi.reminder.refresh",
+                        "com.app.galpi.reminder.refresh",
                     ],
                 ]
             ),
@@ -65,7 +65,7 @@ let project = Project(
             destinations: .iOS,
             product: .appExtension,
             // 앱 번들 ID 접두사를 그대로 따라야 확장으로 인정된다.
-            bundleId: "com.example.galpi.share",
+            bundleId: "com.app.galpi.share",
             deploymentTargets: .iOS("26.0"),
             infoPlist: .extendingDefault(
                 with: [
