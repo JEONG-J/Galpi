@@ -9,6 +9,20 @@ import GalpiDesignSystem
 import GalpiKit
 import SwiftUI
 
+// MARK: - 상수
+
+fileprivate enum Constants {
+
+    /// 설정 행 아이콘 배지 한 변.
+    static let badgeSize: CGFloat = 29
+
+    /// 배지와 라벨 사이 간격 — 구분선이 배지 오른쪽에서 시작하도록 inset 계산에도 쓴다.
+    static let badgeSpacing: CGFloat = 11
+
+    /// 카드 행 좌우 여백 — 배경 없는 행들이 시안의 16pt 여백을 그대로 쓴다.
+    static let cardHorizontalInset: CGFloat = 16
+}
+
 @MainActor
 @Observable
 final class ProfileViewModel {
@@ -114,31 +128,31 @@ public struct ProfileView: View {
 
     public var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 22) {
-                    profileCard
-                    weeklyCard
+            List {
+                profileCard
+                    .plainListRow(insets: cardRowInsets)
 
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("환경설정")
-                            .font(GalpiFont.sectionTitle)
-                            .foregroundStyle(GalpiColor.text)
-                        settingsList
-                    }
+                weeklyCard
+                    .plainListRow(insets: cardRowInsets)
 
-                    Text("갈피 1.0.0 — 모든 데이터는 내 기기와 iCloud에만 저장돼요")
-                        .font(GalpiFont.text(11, .medium))
-                        .foregroundStyle(GalpiColor.textTertiary)
-                        .frame(maxWidth: .infinity, alignment: .center)
-                }
-                .padding(.horizontal, 16)
-                .padding(.bottom, 24)
+                settingsSection
             }
-            .background(GalpiColor.background)
+            .listStyle(.insetGrouped)
+            .listSectionSpacing(18)
+            .scrollContentBackground(.hidden)
             .scrollIndicators(.hidden)
+            .background(GalpiColor.background)
             .navigationTitle("내 정보")
         }
         .onAppear { viewModel.load() }
+    }
+
+    /// 카드는 자기 그림자를 갖고 있어 위아래로 번질 자리를 남긴다.
+    private var cardRowInsets: EdgeInsets {
+        EdgeInsets(
+            top: 8, leading: Constants.cardHorizontalInset,
+            bottom: 8, trailing: Constants.cardHorizontalInset
+        )
     }
 
     // MARK: - Profile
@@ -220,8 +234,8 @@ public struct ProfileView: View {
 
     // MARK: - Settings
 
-    private var settingsList: some View {
-        VStack(spacing: 0) {
+    private var settingsSection: some View {
+        Section {
             Menu {
                 Picker("주기", selection: reminderCadenceBinding) {
                     ForEach(ReminderCadence.allCases, id: \.self) { cadence in
@@ -241,13 +255,13 @@ public struct ProfileView: View {
                     value: viewModel.reminderValue
                 )
             }
-            GalpiSeparator(leadingInset: 57)
+            .settingsRow()
 
-            SettingsRow(
-                symbol: "sparkles", pastel: .blue, label: "AI 자동 정리",
-                accessory: .toggle(aiOrganizeBinding)
-            )
-            GalpiSeparator(leadingInset: 57)
+            Toggle(isOn: aiOrganizeBinding) {
+                SettingsLabel(symbol: "sparkles", pastel: .blue, label: "AI 자동 정리")
+            }
+            .tint(GalpiColor.main)
+            .settingsRow()
 
             Menu {
                 Picker("기본 저장 폴더", selection: defaultFolderBinding) {
@@ -262,21 +276,38 @@ public struct ProfileView: View {
                     value: viewModel.defaultFolderName
                 )
             }
-            GalpiSeparator(leadingInset: 57)
+            .settingsRow()
 
             SettingsRow(
                 symbol: "cloud.fill", pastel: .cyan, label: "iCloud 동기화",
-                value: viewModel.syncedText, accessory: .none
+                value: viewModel.syncedText, showsChevron: false
             )
-            GalpiSeparator(leadingInset: 57)
+            .settingsRow()
 
             ShareLink(item: viewModel.exportText) {
                 SettingsRow(
                     symbol: "square.and.arrow.up", pastel: .gray, label: "데이터 내보내기"
                 )
             }
+            .settingsRow()
+        } header: {
+            Text("환경설정")
+                .font(GalpiFont.sectionTitle)
+                .foregroundStyle(GalpiColor.text)
+                .textCase(nil)
+                .listRowInsets(
+                    EdgeInsets(
+                        top: 0, leading: Constants.cardHorizontalInset,
+                        bottom: 8, trailing: Constants.cardHorizontalInset
+                    )
+                )
+        } footer: {
+            Text("갈피 1.0.0 — 모든 데이터는 내 기기와 iCloud에만 저장돼요")
+                .font(GalpiFont.text(11, .medium))
+                .foregroundStyle(GalpiColor.textTertiary)
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.top, 12)
         }
-        .galpiCard(cornerRadius: 20, shadow: .card)
     }
 
     private var reminderCadenceBinding: Binding<ReminderCadence> {
@@ -308,74 +339,73 @@ public struct ProfileView: View {
     }
 }
 
-/// 설정 행 — 시안 ③ 50h 행.
+/// 설정 행 — 아이콘 배지 + 라벨, 오른쪽에 현재 값.
 private struct SettingsRow: View {
 
-    enum Accessory {
-        case chevron
-        case toggle(Binding<Bool>)
-        case none
-    }
+    // MARK: - Property
 
     let symbol: String
     let pastel: GalpiPastel
     let label: String
     var value: String?
-    var accessory: Accessory = .chevron
+
+    /// `Menu`·`ShareLink` 처럼 눌러서 더 들어가는 행만 갈매기를 단다.
+    var showsChevron = true
+
+    // MARK: - Body
 
     var body: some View {
-        HStack(spacing: 11) {
-            GalpiIconBadge(symbol: symbol, pastel: pastel, size: 29, cornerRadius: 9, iconSize: 14)
-            Text(label)
-                .font(GalpiFont.text(14, .medium))
-                .foregroundStyle(GalpiColor.text)
-            Spacer(minLength: 8)
+        LabeledContent {
+            HStack(spacing: 6) {
+                if let value {
+                    Text(value)
+                        .font(GalpiFont.text(12, .medium))
+                        .foregroundStyle(GalpiColor.textTertiary)
+                        .lineLimit(1)
+                }
 
-            if let value {
-                Text(value)
-                    .font(GalpiFont.text(12, .medium))
-                    .foregroundStyle(GalpiColor.textTertiary)
-                    .lineLimit(1)
+                if showsChevron {
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(GalpiColor.textTertiary)
+                        .accessibilityHidden(true)
+                }
             }
-
-            switch accessory {
-            case .chevron:
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 13, weight: .semibold))
-                    .foregroundStyle(GalpiColor.textTertiary)
-            case .toggle(let isOn):
-                GalpiToggle(isOn: isOn)
-            case .none:
-                EmptyView()
-            }
+        } label: {
+            SettingsLabel(symbol: symbol, pastel: pastel, label: label)
         }
-        .padding(.horizontal, 14)
-        .frame(height: 50)
-        .contentShape(.rect)
     }
 }
 
-/// 시안의 46×28 토글. 시스템 `Toggle` 은 크기·손잡이 그림자가 시안과 달라 직접 그린다.
-private struct GalpiToggle: View {
+/// 설정 행의 왼쪽 — 토글 행도 같은 모양을 써야 배지 위치가 어긋나지 않는다.
+private struct SettingsLabel: View {
 
-    @Binding var isOn: Bool
+    let symbol: String
+    let pastel: GalpiPastel
+    let label: String
 
     var body: some View {
-        Capsule()
-            .fill(isOn ? GalpiColor.main : GalpiColor.thumbnail)
-            .frame(width: 46, height: 28)
-            .overlay(alignment: isOn ? .trailing : .leading) {
-                Circle()
-                    .fill(GalpiColor.surface)
-                    .frame(width: 24, height: 24)
-                    .galpiShadow(.toggleKnob)
-                    .padding(2)
+        Label {
+            Text(label)
+                .font(GalpiFont.text(14, .medium))
+                .foregroundStyle(GalpiColor.text)
+        } icon: {
+            GalpiIconBadge(
+                symbol: symbol, pastel: pastel,
+                size: Constants.badgeSize, cornerRadius: 9, iconSize: 14
+            )
+        }
+    }
+}
+
+private extension View {
+
+    /// 설정 섹션의 행 공통 — 카드 배경 토큰과 시안의 구분선 시작점(배지 오른쪽).
+    func settingsRow() -> some View {
+        listRowBackground(GalpiColor.surface)
+            .alignmentGuide(.listRowSeparatorLeading) { _ in
+                Constants.badgeSize + Constants.badgeSpacing
             }
-            .onTapGesture {
-                withAnimation(.snappy(duration: 0.2)) { isOn.toggle() }
-            }
-            .accessibilityElement()
-            .accessibilityAddTraits(isOn ? [.isButton, .isSelected] : .isButton)
     }
 }
 
