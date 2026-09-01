@@ -1,6 +1,6 @@
 import ProjectDescription
 
-private let bundleIdBase = "com.example.galpi.core"
+private let bundleIdBase = "com.app.galpi.core"
 
 /// Core 모듈용 Project 생성 헬퍼
 ///

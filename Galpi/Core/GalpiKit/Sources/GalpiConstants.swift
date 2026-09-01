@@ -17,10 +17,10 @@ public enum GalpiConstants {
     // MARK: - Property
 
     /// App Group 컨테이너 — `Galpi.entitlements` 의 값과 동일해야 한다.
-    public static let appGroupIdentifier = "group.com.example.galpi"
+    public static let appGroupIdentifier = "group.com.app.galpi"
 
     /// CloudKit 컨테이너 — `Galpi.entitlements` 의 값과 동일해야 한다.
-    public static let cloudKitContainerIdentifier = "iCloud.com.example.galpi"
+    public static let cloudKitContainerIdentifier = "iCloud.com.app.galpi"
 
     /// App Group 안의 SwiftData 스토어 파일명.
     public static let storeFileName = "Galpi.store"
@@ -30,7 +30,7 @@ public enum GalpiConstants {
 
     /// 미열람 리마인드 재등록용 백그라운드 태스크 — Info.plist 의
     /// `BGTaskSchedulerPermittedIdentifiers` 와 동일해야 한다.
-    public static let reminderRefreshTaskIdentifier = "com.example.galpi.reminder.refresh"
+    public static let reminderRefreshTaskIdentifier = "com.app.galpi.reminder.refresh"
 
     /// 미열람 리마인드 알림 식별자. 항상 한 건만 예약하므로 고정값을 재사용한다.
     public static let reminderNotificationIdentifier = "galpi.reminder.unread"

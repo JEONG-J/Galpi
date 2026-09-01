@@ -1,6 +1,6 @@
 import ProjectDescription
 
-private let bundleIdBase = "com.example.galpi.feature"
+private let bundleIdBase = "com.app.galpi.feature"
 
 /// Feature 모듈용 Project 생성 헬퍼
 ///

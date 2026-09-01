@@ -4,7 +4,7 @@
 <dict>
     <key>com.apple.developer.icloud-container-identifiers</key>
     <array>
-        <string>iCloud.com.example.galpi</string>
+        <string>iCloud.com.app.galpi</string>
     </array>
     <key>com.apple.developer.icloud-services</key>
     <array>
@@ -12,7 +12,7 @@
     </array>
     <key>com.apple.security.application-groups</key>
     <array>
-        <string>group.com.example.galpi</string>
+        <string>group.com.app.galpi</string>
     </array>
 </dict>
 </plist>
