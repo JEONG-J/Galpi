@@ -38,7 +38,7 @@
 |------|---------|
 | `SwiftUI-Implementing-Liquid-Glass-Design.md` | `glassEffect`, `GlassEffectContainer`, Glass variant — **디자인 시스템 핵심** |
 | `skills/swiftui-specialist/` | **버전 무관 SwiftUI 베스트 프랙티스** — `@Observable` 무효화 범위, `ForEach`/`List` identity, 뷰 구조 분리, Environment 성능 함정. 코드 리뷰·성능 튜닝 시 1순위 |
-| `WidgetKit-Implementing-Liquid-Glass-Design.md` | `AppNameWidget` 위젯에 Liquid Glass 적용 |
+| `WidgetKit-Implementing-Liquid-Glass-Design.md` | `GalpiWidget` 위젯에 Liquid Glass 적용 |
 | `SwiftUI-New-Toolbar-Features.md` | 툴바 신규 API (`ToolBar/` 헬퍼 작업 시) |
 | `SwiftUI-Styled-Text-Editing.md` | `ArticleTextField` 등 리치 텍스트 입력/편집 |
 | `Foundation-AttributedString-Updates.md` | AttributedString 신규 기능 (마크다운/스타일 텍스트) |

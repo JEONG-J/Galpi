@@ -6,12 +6,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 > 주제별 상세 내용은 `docs/claude/` 로 분리되어 있으며, **필요할 때 해당 파일을 `Read` 로 열어** 참고합니다.
 > (컨텍스트 절약을 위해 `@import` 로 전체를 인라인하지 않습니다.)
 >
-> **새 프로젝트 시작 시**: 아래 `{{ }}` 자리와 `AppName`/`com.example.appname` 플레이스홀더를
-> 실제 값으로 치환하고, 이 안내 블록은 지웁니다. 치환 대상 전체 목록은 `TEMPLATE_SETUP.md` 참고.
+> **남은 치환**: 아래 `{{ }}` 자리와 `com.example.galpi` 번들 ID 플레이스홀더를
+> 실제 값으로 채우고, 이 안내 블록은 지웁니다. 치환 대상 전체 목록은 `TEMPLATE_SETUP.md` 참고.
 
 ## Project Overview
 
-**{{프로젝트 이름}}** — SwiftUI + iOS {{최소 지원 버전}}+
+**갈피 (Galpi)** — SwiftUI + iOS {{최소 지원 버전}}+
 
 - **App Statement**: "{{한 줄 슬로건}}"
 - **목적**: {{해결하려는 문제}}
@@ -89,14 +89,14 @@ View ←→ ViewModel(@Observable) → UseCase(Protocol) → Repository → Data
 
 ```bash
 # Tuist — 표준 진입점은 Makefile
-cd AppName && make bootstrap  # 최초 1회: mise + tuist 설치
-cd AppName && make open       # generate + Xcode 열기
-cd AppName && make test       # 테스트
-cd AppName && make doctor     # 환경 진단
+cd Galpi && make bootstrap  # 최초 1회: mise + tuist 설치
+cd Galpi && make open       # generate + Xcode 열기
+cd Galpi && make test       # 테스트
+cd Galpi && make doctor     # 환경 진단
 ```
 
-- Tuist 버전은 `AppName/mise.toml` 로 고정
-- 상세: `docs/claude/build-and-modules.md`, `AppName/MAKEFILE_GUIDE.md`
+- Tuist 버전은 `Galpi/mise.toml` 로 고정
+- 상세: `docs/claude/build-and-modules.md`, `Galpi/MAKEFILE_GUIDE.md`
 
 ## 상세 레퍼런스 (필요 시 Read)
 
@@ -144,6 +144,6 @@ Apple 프레임워크 API — 신규 Apple API를 다룰 때:
 |------|------|--------------|
 | 서버 레포 | {{서버 레포 URL}} | API 엔드포인트·요청/응답 스펙 확인, 서버 구현/배포 상태 점검, iOS DTO와 실제 응답이 어긋날 때 원인 추적 |
 
-- 조회 수단: `gh` CLI(`gh api repos/YOUR-ORG/{{서버레포}}/contents/...`) 또는 `WebFetch`.
+- 조회 수단: `gh` CLI(`gh api repos/JEONG-J/{{서버레포}}/contents/...`) 또는 `WebFetch`.
 - **읽기 전용으로만 사용** — 서버 레포에 커밋·PR·이슈를 만들지 않는다(메인테이너가 명시적으로 지시한 경우 제외).
 - 스펙 추측 금지: 필드명·타입·nullable 여부는 서버의 컨트롤러/DTO 실제 코드로 확인한 뒤 iOS Response DTO에 반영한다(절대 규칙 #2·#3과 함께 적용).

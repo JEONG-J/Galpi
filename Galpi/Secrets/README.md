@@ -1,29 +1,29 @@
 # Secrets (xcconfig 기반 환경/시크릿 주입)
 
-앱 타겟의 `BASE_URL`·`KAKAO_KEY`·`TMAP_SECRET_KEY` 를 빌드 설정(xcconfig) → `Info.plist` → `Config`(AppFoundation) 경로로 주입합니다.
+앱 타겟의 `BASE_URL`·`KAKAO_KEY`·`TMAP_SECRET_KEY` 를 빌드 설정(xcconfig) → `Info.plist` → `Config`(GalpiFoundation) 경로로 주입합니다.
 
 ## 파일 구성
 
 | 파일 | 배치 경로 | 커밋 | 역할 |
 |------|-----------|------|------|
-| `Shared.xcconfig` | `AppName/Secrets/` | ✅ | 앱 타겟이 참조하는 진입 xcconfig. 비밀이 아닌 기본값 + 환경별 `BASE_URL` 정의. 마지막에 `Secrets.xcconfig` 를 선택적 포함. |
-| `Secrets.xcconfig.template` | `AppName/Secrets/` | ✅ | 로컬 시크릿 템플릿(플레이스홀더). |
-| `Secrets.xcconfig` | `AppName/Secrets/` | ❌ (gitignore) | 개발자별 실제 키. `Shared.xcconfig` 기본값을 오버라이드. |
-| `GoogleService-Info.plist` | `AppName/AppName/Resources/` | ❌ (gitignore) | Firebase(FCM 푸시·RemoteConfig) 설정. 없으면 `AppNameApp.configureFirebaseIfNeeded()` 가 구성을 건너뛴다. |
+| `Shared.xcconfig` | `Galpi/Secrets/` | ✅ | 앱 타겟이 참조하는 진입 xcconfig. 비밀이 아닌 기본값 + 환경별 `BASE_URL` 정의. 마지막에 `Secrets.xcconfig` 를 선택적 포함. |
+| `Secrets.xcconfig.template` | `Galpi/Secrets/` | ✅ | 로컬 시크릿 템플릿(플레이스홀더). |
+| `Secrets.xcconfig` | `Galpi/Secrets/` | ❌ (gitignore) | 개발자별 실제 키. `Shared.xcconfig` 기본값을 오버라이드. |
+| `GoogleService-Info.plist` | `Galpi/Galpi/Resources/` | ❌ (gitignore) | Firebase(FCM 푸시·RemoteConfig) 설정. 없으면 `GalpiApp.configureFirebaseIfNeeded()` 가 구성을 건너뛴다. |
 
 두 시크릿 모두 **팀 공유 채널에서 수령**합니다. (`GoogleService-Info.plist` 는 Firebase 콘솔 →
-프로젝트 설정 → iOS 앱 `com.example.appname` 에서도 내려받을 수 있습니다.)
+프로젝트 설정 → iOS 앱 `com.example.galpi` 에서도 내려받을 수 있습니다.)
 
 ## 최초 세팅
 
 ```bash
-cd AppName/Secrets
+cd Galpi/Secrets
 cp Secrets.xcconfig.template Secrets.xcconfig
 # Secrets.xcconfig 를 열어 팀 채널에서 받은 실제 값 입력
 cd ..
 
 # Firebase 설정 파일을 앱 리소스 폴더에 배치 (buildableFolders 로 자동 포함됨)
-cp ~/Downloads/GoogleService-Info.plist AppName/Resources/
+cp ~/Downloads/GoogleService-Info.plist Galpi/Resources/
 
 make generate
 ```
@@ -63,15 +63,15 @@ Shared.xcconfig (+ Secrets.xcconfig 오버라이드)
 
 ## CI
 
-`.github/workflows/tuist-ci.yml` 이 클론 직후 두 파일을 AppName 경로에 주입합니다.
+`.github/workflows/tuist-ci.yml` 이 클론 직후 두 파일을 Galpi 경로에 주입합니다.
 
 - `Secrets/Secrets.xcconfig` ← `Secrets.xcconfig.template` 복사 (플레이스홀더 값)
-- `AppName/Resources/GoogleService-Info.plist` ← `secrets.GOOGLE_SERVICE_INFO_PLIST_BASE64` 디코드
+- `Galpi/Resources/GoogleService-Info.plist` ← `secrets.GOOGLE_SERVICE_INFO_PLIST_BASE64` 디코드
   (시크릿 미설정 환경(fork PR 등)에서는 스킵)
 
 CI 는 Debug 구성으로 빌드하므로 위 가드는 경고만 남깁니다. **Release 아카이브를 만드는 파이프라인
 (Xcode Cloud `ci_post_clone` 등)에서는 실제 값을 주입해야 빌드가 통과합니다.** 레거시 스크립트
 Xcode Cloud 의 `ci_scripts/ci_post_clone.sh` 가 환경 변수 → xcconfig/plist 생성 로직의 참고 구현입니다
-(경로만 `AppName/Secrets/`, `AppName/AppName/Resources/` 로 바꾸면 됩니다).
+(경로만 `Galpi/Secrets/`, `Galpi/Galpi/Resources/` 로 바꾸면 됩니다).
 
 > xcconfig 에서 `//` 는 주석이므로 URL 은 `https:/$()/...` 형태로 escape 합니다.

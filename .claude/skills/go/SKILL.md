@@ -78,8 +78,8 @@ DESTINATION='platform=iOS Simulator,name=iPhone 16 Pro'
 
 ```bash
 xcodebuild \
-    -project AppName/AppName.xcodeproj \
-    -scheme AppName \
+    -project Galpi/Galpi.xcodeproj \
+    -scheme Galpi \
     -configuration Debug \
     -destination "$DESTINATION" \
     clean build \
@@ -112,8 +112,8 @@ Agent(
 
 ```bash
 xcodebuild \
-    -project AppName/AppName.xcodeproj \
-    -scheme AppName \
+    -project Galpi/Galpi.xcodeproj \
+    -scheme Galpi \
     -destination "$DESTINATION" \
     test \
     2>&1 | tee /tmp/go_test.log | xcbeautify 2>/dev/null || cat /tmp/go_test.log
@@ -121,7 +121,7 @@ xcodebuild \
 
 **테스트 타겟이 없거나 스킵된 경우:**
 - 빌드만 통과해도 Phase 1은 PASS로 간주 (경고 메시지 출력)
-- `AppNameTests/` 디렉터리 존재 여부로 판단
+- `GalpiTests/` 디렉터리 존재 여부로 판단
 
 ### 1-D. Phase 1 결과 출력
 
@@ -224,8 +224,8 @@ Phase 2에서 변경사항이 있을 때만 실행:
 ```bash
 if [ -n "$(git diff --stat)" ]; then
     xcodebuild \
-        -project AppName/AppName.xcodeproj \
-        -scheme AppName \
+        -project Galpi/Galpi.xcodeproj \
+        -scheme Galpi \
         -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
         build test \
         2>&1 | tee /tmp/go_reverify.log | xcbeautify 2>/dev/null || cat /tmp/go_reverify.log

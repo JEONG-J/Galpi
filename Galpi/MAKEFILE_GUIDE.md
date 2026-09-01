@@ -1,11 +1,11 @@
-# AppName Makefile 사용 가이드
+# Galpi Makefile 사용 가이드
 
 팀원 전원이 **동일한 Tuist 버전**으로 작업할 수 있도록 만든 래퍼입니다.
 `mise.toml` 에 고정된 Tuist 버전을 `mise exec --` 로 감싸 실행합니다.
 
-> 모든 명령은 `AppName/` 디렉터리에서 실행합니다.
+> 모든 명령은 `Galpi/` 디렉터리에서 실행합니다.
 > ```bash
-> cd AppName
+> cd Galpi
 > ```
 
 ---
@@ -31,7 +31,7 @@ source ~/.zshrc
 ### Step 2. Tuist 설치 + 프로젝트 생성
 
 ```bash
-cd AppName
+cd Galpi
 make bootstrap   # mise.toml 기반으로 tuist 4.155.0 자동 설치
 make install     # SPM 의존성 설치
 make generate    # .xcworkspace / .xcodeproj 생성
@@ -52,7 +52,7 @@ make open        # Xcode 실행
 | `make install` | SPM 의존성 설치 | `Tuist/Package.swift` 변경 후 |
 | `make edit` | Tuist 매니페스트 편집 모드 | `Project+Feature.swift` 등 수정 시 |
 | `make graph` | 의존성 그래프(`graph.png`) 생성 | 구조 리뷰할 때 |
-| `make test` | 테스트 실행 (`SCHEME` = `AppName`) | CI 재현 / 로컬 검증 |
+| `make test` | 테스트 실행 (`SCHEME` = `Galpi`) | CI 재현 / 로컬 검증 |
 | `make test SCHEME=…` | 특정 스킴(모듈)만 테스트 | 한 모듈만 빠르게 검증할 때 |
 | `make test-pick` | 스킴 목록에서 골라 테스트 (대화형) | 스킴 이름이 안 떠오를 때 |
 | `make test-network` | CoreNetwork 단위+통합 테스트 (`TEST_SERVER_URL` 자동 전달) | 네트워크 레이어 변경 후 |
@@ -91,7 +91,7 @@ make open
 
 | 변수 | 기본값 | 예시 |
 |------|--------|------|
-| `SCHEME` | `AppName` | `make build SCHEME=AuthDomain` (모듈 단위 빌드) |
+| `SCHEME` | `Galpi` | `make build SCHEME=AuthDomain` (모듈 단위 빌드) |
 | `CONFIGURATION` | `Debug` | `make build CONFIGURATION=Release` |
 | `DESTINATION` | `platform=iOS Simulator,name=iPhone 17 Pro` | `make test DESTINATION='platform=iOS Simulator,name=iPhone 17'` |
 | `TEST_SERVER_URL` | `http://127.0.0.1:8080` | `make test-network TEST_SERVER_URL=http://127.0.0.1:9090` |
@@ -126,7 +126,7 @@ make test-pick   # 테스트용
 ### 사용 가능한 스킴 확인
 
 ```bash
-xcodebuild -workspace AppName.xcworkspace -list
+xcodebuild -workspace Galpi.xcworkspace -list
 ```
 
 ---
@@ -138,16 +138,16 @@ xcodebuild -workspace AppName.xcworkspace -list
 | 계층 | 무엇 | 외부 의존 |
 |------|------|----------|
 | **단위 테스트** | URLProtocol 스텁 + actor Mock 으로 `NetworkClient`/`APIResponse`/`TokenPair` 검증 | 없음 — 항상 실행 |
-| **통합 테스트** | 실제 Vapor 테스트 서버(`AppNameTestServer/`) 의 `/test`, `/protected`, `/auth/reissue` 호출 | 서버 살아있어야 실행 (없으면 자동 스킵) |
+| **통합 테스트** | 실제 Vapor 테스트 서버(`GalpiTestServer/`) 의 `/test`, `/protected`, `/auth/reissue` 호출 | 서버 살아있어야 실행 (없으면 자동 스킵) |
 
 `make test-network` 한 번이면 두 계층이 동시에 돌아갑니다 — 통합 테스트는 `IntegrationConfig.isEnabled` 가 서버를 1.5초 ping 으로 감지해서 켜지므로 **서버를 띄워두고 돌리면 38개, 안 띄우면 31개** 가 통과합니다.
 
 ### 한 줄로 끝내기 (`make integration`)
 
-레포 루트의 `AppNameTestServer/Makefile` 에 **start → AppName test-network → stop** 원샷이 있습니다.
+레포 루트의 `GalpiTestServer/Makefile` 에 **start → Galpi test-network → stop** 원샷이 있습니다.
 
 ```bash
-cd AppNameTestServer
+cd GalpiTestServer
 make integration   # 서버 자동 기동 → CoreNetwork 통합 테스트 → 서버 자동 종료
 ```
 
@@ -157,17 +157,17 @@ make integration   # 서버 자동 기동 → CoreNetwork 통합 테스트 → �
 
 ```bash
 # 터미널 A — 서버 띄우기
-cd AppNameTestServer
+cd GalpiTestServer
 make start         # 백그라운드 + .server.pid / .server.log
 make logs          # tail -f
 make health        # / · /test · /protected 핑
 
 # 터미널 B — 테스트 반복
-cd AppName
+cd Galpi
 make test-network  # 서버 살아있으면 통합도 자동 포함
 
 # 끝
-cd AppNameTestServer && make stop
+cd GalpiTestServer && make stop
 ```
 
 ### 환경 변수
@@ -175,12 +175,12 @@ cd AppNameTestServer && make stop
 | 변수 | 어디서 | 용도 |
 |------|--------|------|
 | `TEST_SERVER_URL` | `make test-network`, `make integration` | 테스트 코드(`IntegrationConfig.baseURL`) 가 읽는 베이스 URL |
-| `HOST`, `PORT` | `AppNameTestServer/Makefile` | 서버 바인딩 (`make start HOST=0.0.0.0 PORT=9090`) |
+| `HOST`, `PORT` | `GalpiTestServer/Makefile` | 서버 바인딩 (`make start HOST=0.0.0.0 PORT=9090`) |
 
 ### 트러블슈팅 — 포트 8080 점유
 
 ```bash
-cd AppNameTestServer
+cd GalpiTestServer
 make stop          # PID 파일 + pkill 패턴 + lsof 폴백 3중 종료
 ```
 
@@ -193,7 +193,7 @@ make stop          # PID 파일 + pkill 패턴 + lsof 폴백 3중 종료
 Tuist 버전을 올릴 때는 **`mise.toml` 만** 수정합니다. Makefile은 건드리지 않습니다.
 
 ```toml
-# AppName/mise.toml
+# Galpi/mise.toml
 [tools]
 tuist = "4.155.0"   # ← 이 값만 변경
 ```
@@ -201,7 +201,7 @@ tuist = "4.155.0"   # ← 이 값만 변경
 변경 후 팀원들은 각자:
 
 ```bash
-cd AppName
+cd Galpi
 make bootstrap    # 새 버전 자동 설치
 make reset
 make generate
@@ -234,7 +234,7 @@ make generate
 
 ```
 Big-Dipper-iOS/
-├── AppName/
+├── Galpi/
 │   ├── Makefile              # ← 이 가이드가 설명하는 파일
 │   ├── MAKEFILE_GUIDE.md     # ← 이 문서
 │   ├── mise.toml             # tuist 버전 고정
@@ -246,9 +246,9 @@ Big-Dipper-iOS/
 │   │   └── ProjectDescriptionHelpers/
 │   ├── Core/                 # 공유 인프라 모듈
 │   └── Features/             # 기능 모듈
-└── AppNameTestServer/     # CoreNetwork 통합 테스트용 Vapor 서버
+└── GalpiTestServer/     # CoreNetwork 통합 테스트용 Vapor 서버
     ├── Makefile              # start / stop / integration 원샷
-    └── Sources/AppNameTestServer/
+    └── Sources/GalpiTestServer/
 ```
 
-모듈 구조 자체에 대한 설명은 루트 `CLAUDE.md` 의 **"Tuist 모듈 구조 (AppName)"** 섹션을 참고하세요.
+모듈 구조 자체에 대한 설명은 루트 `CLAUDE.md` 의 **"Tuist 모듈 구조 (Galpi)"** 섹션을 참고하세요.

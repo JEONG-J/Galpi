@@ -1,10 +1,10 @@
-# AppName Tuist Makefile
+# Galpi Tuist Makefile
 #
 # 팀 전원이 동일한 Tuist 버전(mise.toml 고정)으로 작업하기 위한 래퍼입니다.
 # mise가 tuist 버전을 관리하므로, 모든 tuist 호출은 `mise exec --` 로 감쌉니다.
 #
 # 사용법:
-#   cd AppName
+#   cd Galpi
 #   make bootstrap   # 최초 1회: mise + tuist 설치
 #   make generate    # 프로젝트 생성 (가장 자주 쓰는 커맨드)
 #   make help        # 전체 타겟 목록
@@ -12,8 +12,8 @@
 SHELL := /bin/bash
 .DEFAULT_GOAL := help
 
-SCHEME ?= AppName
-WORKSPACE := AppName.xcworkspace
+SCHEME ?= Galpi
+WORKSPACE := Galpi.xcworkspace
 DESTINATION ?= platform=iOS Simulator,name=iPhone 17 Pro
 CONFIGURATION ?= Debug
 
@@ -26,7 +26,7 @@ TUIST := $(MISE) exec -- tuist
 
 .PHONY: help
 help: ## 이 도움말 출력
-	@awk 'BEGIN {FS = ":.*?## "; printf "\nAppName Makefile — 사용 가능한 타겟:\n\n"} \
+	@awk 'BEGIN {FS = ":.*?## "; printf "\nGalpi Makefile — 사용 가능한 타겟:\n\n"} \
 		/^[a-zA-Z_-]+:.*?## / { printf "  \033[36m%-18s\033[0m %s\n", $$1, $$2 } \
 		/^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) }' $(MAKEFILE_LIST)
 	@echo ""

@@ -7,15 +7,15 @@
 
 ## Build & Run
 
-빌드 축은 `AppName/`(Tuist) 하나입니다. 레거시 xcodeproj 를 함께 굴리는 프로젝트라면
-`### AppName (xcodeproj)` 절을 아래에 추가하고, 어느 쪽이 신규 작업 기준인지 명시합니다.
+빌드 축은 `Galpi/`(Tuist) 하나입니다. 레거시 xcodeproj 를 함께 굴리는 프로젝트라면
+`### Galpi (xcodeproj)` 절을 아래에 추가하고, 어느 쪽이 신규 작업 기준인지 명시합니다.
 
-### AppName (Tuist)
+### Galpi (Tuist)
 
-Tuist 버전은 `AppName/mise.toml` 로 팀 전원 고정됩니다. Makefile이 `mise exec --` 래퍼를 제공하므로 **로컬 tuist 버전 차이가 발생하지 않습니다**.
+Tuist 버전은 `Galpi/mise.toml` 로 팀 전원 고정됩니다. Makefile이 `mise exec --` 래퍼를 제공하므로 **로컬 tuist 버전 차이가 발생하지 않습니다**.
 
 ```bash
-cd AppName
+cd Galpi
 
 # 최초 1회 (신규 팀원)
 brew install mise      # mise가 없다면
@@ -31,11 +31,11 @@ make reset             # 꼬였을 때 전체 초기화
 make help              # 전체 타겟 목록
 ```
 
-자세한 사용법은 `AppName/MAKEFILE_GUIDE.md` 참고.
+자세한 사용법은 `Galpi/MAKEFILE_GUIDE.md` 참고.
 
-## Tuist 모듈 구조 (AppName)
+## Tuist 모듈 구조 (Galpi)
 
-`AppName/` 폴더가 Tuist 기반 모듈화 프로젝트의 루트입니다.
+`Galpi/` 폴더가 Tuist 기반 모듈화 프로젝트의 루트입니다.
 
 ### 버전 관리 & 빌드 래퍼
 
@@ -51,7 +51,7 @@ make help              # 전체 타겟 목록
 ### 전체 구조
 
 ```
-AppName/
+Galpi/
 ├── Makefile                       # 빌드/생성 래퍼 (mise exec 기반)
 ├── MAKEFILE_GUIDE.md              # 팀원용 사용 가이드
 ├── mise.toml                      # tuist 버전 고정
@@ -75,8 +75,8 @@ AppName/
 │   ├── Auth/
 │   ├── Home/
 │   └── MyPage/
-├── AppNameWidget/                 # Widget Extension 타겟
-└── AppNameWatchApp/               # watchOS Companion App 타겟
+├── GalpiWidget/                 # Widget Extension 타겟
+└── GalpiWatchApp/               # watchOS Companion App 타겟
 ```
 
 > Core 는 "여러 Feature 가 공유하는 인프라"만 둡니다. 특정 Feature 전용 인프라를 Core 로 올리면
@@ -85,12 +85,12 @@ AppName/
 ### 모듈 의존성 방향
 
 ```
-App Target (AppName)
+App Target (Galpi)
     ↓
 Feature Presentation  (Domain + CoreDesignSystem + CoreUIComponents)
     ↓
-Feature Domain        (AppFoundation)
-Feature Data          (Domain + CoreNetwork + AppFoundation)
+Feature Domain        (GalpiFoundation)
+Feature Data          (Domain + CoreNetwork + GalpiFoundation)
     ↓
 Core Modules          (Foundation / Network / DesignSystem / UIComponents / DI)
     ↓
@@ -155,7 +155,7 @@ Feature 를 새로 팔지, 기존 Feature 에서 재사용할지는 그때그때
 coreProject(
     name: "CoreNetwork",
     bundleIdSuffix: "network",
-    dependencies: [.target(name: "AppFoundation"), .external(name: "Moya")]
+    dependencies: [.target(name: "GalpiFoundation"), .external(name: "Moya")]
 )
 
 // Feature 모듈 생성 (3개 타겟 자동 생성)
@@ -183,11 +183,11 @@ featureProject(
 
 ### 주요 설정
 
-- **Tuist 버전**: `AppName/mise.toml` 고정 (`4.155.0`)
+- **Tuist 버전**: `Galpi/mise.toml` 고정 (`4.155.0`)
 - **Deployment Target**: iOS 26.4 (`Project.swift` 기준, 전체 타겟 공통)
 - **Product Type**: 모든 모듈 `.staticFramework`
 - **Bundle ID**: Core → `dev.example.core.*` / Feature → `dev.example.feature.*.*`
-- **Workspace**: glob(`Core/*`, `Features/*`) + `AppNameWidget`, `AppNameWatchApp` 명시 포함
+- **Workspace**: glob(`Core/*`, `Features/*`) + `GalpiWidget`, `GalpiWatchApp` 명시 포함
 
 ### 공유 Keychain Access Group
 
@@ -199,8 +199,8 @@ featureProject(
 ```xml
 <key>keychain-access-groups</key>
 <array>
-    <string>$(AppIdentifierPrefix)com.example.appname.shared</string>
-    <string>$(AppIdentifierPrefix)com.example.appname</string>
+    <string>$(AppIdentifierPrefix)com.example.galpi.shared</string>
+    <string>$(AppIdentifierPrefix)com.example.galpi</string>
 </array>
 ```
 

@@ -1,5 +1,5 @@
 import Testing
-@testable import AppName
+@testable import Galpi
 
 private struct Mock__REPO_PROTOCOL__: __REPO_PROTOCOL__ {
     var result: Result<String, Error> = .success("ok")

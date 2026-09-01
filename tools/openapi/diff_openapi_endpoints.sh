@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 #  diff_openapi_endpoints.sh
-#  AppName
+#  Galpi
 #
 #  Created by euijjang97 on 2/13/26.
 #

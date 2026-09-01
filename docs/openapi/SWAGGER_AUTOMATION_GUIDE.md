@@ -40,8 +40,8 @@ tools/openapi/generate_endpoint_scaffold.sh \
 
 생성 위치:
 
-- `AppName/AppName/Features/<Feature>/Data/Generated/*.generated.swift`
-- `AppName/AppName/Features/<Feature>/Data/Generated/*.generated.meta.md`
+- `Galpi/Galpi/Features/<Feature>/Data/Generated/*.generated.swift`
+- `Galpi/Galpi/Features/<Feature>/Data/Generated/*.generated.meta.md`
 
 ### 2) 스펙 변경점 확인
 

@@ -6,7 +6,7 @@
 
 {{한 줄 소개 — 이 앱이 누구의 어떤 문제를 푸는지}}
 
-[![Release](https://img.shields.io/github/v/release/YOUR-ORG/YOUR-REPO?label=release&color=blue)](https://github.com/YOUR-ORG/YOUR-REPO/releases)
+[![Release](https://img.shields.io/github/v/release/JEONG-J/Galpi?label=release&color=blue)](https://github.com/JEONG-J/Galpi/releases)
 [![Swift](https://img.shields.io/badge/Swift-6.3-orange.svg)]()
 [![Xcode](https://img.shields.io/badge/Xcode-26.2-1575F9.svg)]()
 [![iOS](https://img.shields.io/badge/iOS-26.0+-black.svg)]()
@@ -41,13 +41,13 @@
 
 </div>
 
-> 기수별 팀원 구성(사진·역할·GitHub)은 [Wiki › Team](https://github.com/YOUR-ORG/YOUR-REPO/wiki/Team)에서,
-> 신규 기능·운영 기록은 [Wiki › Release History](https://github.com/YOUR-ORG/YOUR-REPO/wiki/Release-History)에서 확인하세요.
+> 기수별 팀원 구성(사진·역할·GitHub)은 [Wiki › Team](https://github.com/JEONG-J/Galpi/wiki/Team)에서,
+> 신규 기능·운영 기록은 [Wiki › Release History](https://github.com/JEONG-J/Galpi/wiki/Release-History)에서 확인하세요.
 
 ## 📚 개발 문서
 
 아키텍처·코딩 컨벤션·빌드 방법 등 상세 가이드는 `docs/claude/` 에 있습니다.
-팀 규모가 커지면 [Wiki](https://github.com/YOUR-ORG/YOUR-REPO/wiki) 로 이관하고 아래 표의 링크만 바꾸세요.
+팀 규모가 커지면 [Wiki](https://github.com/JEONG-J/Galpi/wiki) 로 이관하고 아래 표의 링크만 바꾸세요.
 
 | 주제 | 문서 |
 |------|------|
@@ -57,7 +57,7 @@
 | 🌐 네트워크 & DTO 디코딩 | [network-router.md](docs/claude/network-router.md) · [response-dto-decoding.md](docs/claude/response-dto-decoding.md) |
 | 🎨 디자인 시스템 | [design-system.md](docs/claude/design-system.md) |
 | 🧱 모듈 구조 (Tuist) | [build-and-modules.md](docs/claude/build-and-modules.md) |
-| ⚙️ 빌드 & 실행 | [AppName/MAKEFILE_GUIDE.md](AppName/MAKEFILE_GUIDE.md) |
+| ⚙️ 빌드 & 실행 | [Galpi/MAKEFILE_GUIDE.md](Galpi/MAKEFILE_GUIDE.md) |
 | 🔀 Git 워크플로우 | [git-workflow.md](docs/claude/git-workflow.md) |
 | 🔍 PR 리뷰 | [pr-review.md](docs/claude/pr-review.md) |
 | 🍎 Apple 프레임워크 · 스킬팩 | [apple-frameworks/INDEX.md](docs/claude/apple-frameworks/INDEX.md) |
@@ -70,10 +70,10 @@
 
 - `Secrets.xcconfig`(`BASE_URL`, `KAKAO_KEY` 등)와 `GoogleService-Info.plist`는 **팀 내부 채널**에서 수령합니다.
 - 실제 키·설정 파일은 원격 저장소에 커밋하지 않습니다.
-- 상세 절차: [AppName/Secrets/README.md](AppName/Secrets/README.md)
+- 상세 절차: [Galpi/Secrets/README.md](Galpi/Secrets/README.md)
 
 ```bash
-cd AppName
+cd Galpi
 make bootstrap                                       # mise + tuist 설치 (최초 1회)
 cp Secrets/Secrets.xcconfig.template Secrets/Secrets.xcconfig
 make open                                            # generate + Xcode 열기

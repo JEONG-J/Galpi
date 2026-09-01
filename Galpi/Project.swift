@@ -2,22 +2,22 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project(
-    name: "AppName",
+    name: "Galpi",
     settings: recommendedProjectSettings,
     targets: [
         .target(
-            name: "AppName",
+            name: "Galpi",
             destinations: .iOS,
             product: .app,
             // App Store 앱 레코드와 동일해야 한다. 이 값이 바뀌면 별개 앱이 되어
             // 카카오/Firebase/Google OAuth 등록이 전부 무효화된다.
-            bundleId: "com.example.appname",
+            bundleId: "com.example.galpi",
             deploymentTargets: .iOS("26.4"),
             infoPlist: .extendingDefault(
                 with: [
                     "CFBundleShortVersionString": "$(MARKETING_VERSION)",
                     // 홈 화면 표시 이름 — 프로젝트에 맞게 바꾼다.
-                    "CFBundleDisplayName": "AppName",
+                    "CFBundleDisplayName": "Galpi",
                     "CFBundleVersion": "$(CURRENT_PROJECT_VERSION)",
                     "UILaunchScreen": [
                         "UIColorName": "",
@@ -40,11 +40,11 @@ let project = Project(
                     "NSLocalNetworkUsageDescription":
                         "주변 기기를 찾기 위해 로컬 네트워크를 사용합니다.",
                     "NSBonjourServices": [
-                        "_appname-card._tcp",
-                        "_appname-card._udp",
+                        "_galpi-card._tcp",
+                        "_galpi-card._udp",
                     ],
                     // Secrets/Shared.xcconfig(+ Secrets.xcconfig)에서 주입되는 값.
-                    // AppFoundation의 Config가 이 키들을 읽는다.
+                    // GalpiFoundation의 Config가 이 키들을 읽는다.
                     // (BASE_URL / KAKAO_KEY / TMAP_SECRET_KEY / GOOGLE_CLIENT_ID / GOOGLE_REVERSED_CLIENT_ID)
                     "BASE_URL": "$(BASE_URL)",
                     "KAKAO_KEY": "$(KAKAO_KEY)",
@@ -62,10 +62,10 @@ let project = Project(
                         [
                             "CFBundleURLSchemes": ["$(GOOGLE_REVERSED_CLIENT_ID)"],
                         ],
-                        // 스레드 공유 딥링크 `appname://thread/{id}` (CommunityDomain.MessageLink)
+                        // 스레드 공유 딥링크 `galpi://thread/{id}` (CommunityDomain.MessageLink)
                         [
-                            "CFBundleURLName": "com.example.appname.deeplink",
-                            "CFBundleURLSchemes": ["appname"],
+                            "CFBundleURLName": "com.example.galpi.deeplink",
+                            "CFBundleURLSchemes": ["galpi"],
                         ],
                     ],
                     "LSApplicationQueriesSchemes": [
@@ -76,10 +76,10 @@ let project = Project(
                 ]
             ),
             buildableFolders: [
-                "AppName/Sources",
-                "AppName/Resources",
+                "Galpi/Sources",
+                "Galpi/Resources",
             ],
-            entitlements: .file(path: "AppName.entitlements"),
+            entitlements: .file(path: "Galpi.entitlements"),
             scripts: [
                 // 시크릿(Secrets.xcconfig / GoogleService-Info.plist) 누락 시 Release 빌드 중단.
                 // Debug 는 경고만 — 신규 클론·CI 는 시크릿 없이도 빌드되어야 한다.
@@ -90,7 +90,7 @@ let project = Project(
                     name: "Verify Secrets",
                     inputPaths: [
                         "$(SRCROOT)/Scripts/verify-secrets.sh",
-                        "$(SRCROOT)/AppName/Resources/GoogleService-Info.plist",
+                        "$(SRCROOT)/Galpi/Resources/GoogleService-Info.plist",
                     ],
                     basedOnDependencyAnalysis: false
                 ),
@@ -128,8 +128,8 @@ let project = Project(
                 .project(target: "CoreNearbyExchange", path: .relativeToRoot("Core/NearbyExchange")),
                 .external(name: "FirebaseCore"),
                 .external(name: "FirebaseMessaging"),
-                .project(target: "AppNameWidget", path: "AppNameWidget"),
-                .project(target: "AppNameWatchApp", path: "AppNameWatchApp"),
+                .project(target: "GalpiWidget", path: "GalpiWidget"),
+                .project(target: "GalpiWatchApp", path: "GalpiWatchApp"),
             ],
             settings: .settings(
                 configurations: [
@@ -139,16 +139,16 @@ let project = Project(
             )
         ),
         .target(
-            name: "AppNameTests",
+            name: "GalpiTests",
             destinations: .iOS,
             product: .unitTests,
-            bundleId: "com.example.appname.tests",
+            bundleId: "com.example.galpi.tests",
             deploymentTargets: .iOS("26.4"),
             infoPlist: .default,
             buildableFolders: [
-                "AppName/Tests",
+                "Galpi/Tests",
             ],
-            dependencies: [.target(name: "AppName")]
+            dependencies: [.target(name: "Galpi")]
         ),
     ]
 )

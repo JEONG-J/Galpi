@@ -5,9 +5,9 @@ private let bundleIdBase = "dev.example.feature"
 /// Feature 모듈용 Project 생성 헬퍼
 ///
 /// 각 Feature는 Domain / Data / Presentation 세 개의 staticFramework 타겟으로 구성됩니다.
-/// - Domain: AppFoundation 의존
-/// - Data: {Name}Domain + CoreNetwork + AppFoundation 의존
-/// - Presentation: {Name}Domain + CoreDesignSystem + CoreUIComponents + AppFoundation 의존
+/// - Domain: GalpiFoundation 의존
+/// - Data: {Name}Domain + CoreNetwork + GalpiFoundation 의존
+/// - Presentation: {Name}Domain + CoreDesignSystem + CoreUIComponents + GalpiFoundation 의존
 ///
 /// 테스트 타겟은 레이어별로 옵션 활성화 시 생성됩니다 (`{Name}DomainTests`, `{Name}DataTests`, `{Name}PresentationTests`).
 /// 메인 타겟은 자동으로 의존성에 포함됩니다.
@@ -54,7 +54,7 @@ public func featureProject(
             deploymentTargets: domainDeploymentTargets,
             sources: ["Domain/Sources/**"],
             dependencies: [
-                .project(target: "AppFoundation", path: .relativeToRoot("Core/Foundation")),
+                .project(target: "GalpiFoundation", path: .relativeToRoot("Core/Foundation")),
             ] + domainExtraDependencies
         ),
         .target(
@@ -68,7 +68,7 @@ public func featureProject(
             dependencies: [
                 .target(name: "\(name)Domain"),
                 .project(target: "CoreNetwork", path: .relativeToRoot("Core/Network")),
-                .project(target: "AppFoundation", path: .relativeToRoot("Core/Foundation")),
+                .project(target: "GalpiFoundation", path: .relativeToRoot("Core/Foundation")),
             ] + dataExtraDependencies
         ),
         .target(
@@ -82,7 +82,7 @@ public func featureProject(
                 .target(name: "\(name)Domain"),
                 .project(target: "CoreDesignSystem", path: .relativeToRoot("Core/DesignSystem")),
                 .project(target: "CoreUIComponents", path: .relativeToRoot("Core/UIComponents")),
-                .project(target: "AppFoundation", path: .relativeToRoot("Core/Foundation")),
+                .project(target: "GalpiFoundation", path: .relativeToRoot("Core/Foundation")),
             ] + presentationExtraDependencies
         ),
     ]

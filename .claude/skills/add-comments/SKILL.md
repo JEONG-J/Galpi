@@ -90,7 +90,7 @@ argument-hint: [optional: specific file path]
 
 ### 사용법 2: 특정 파일에만 주석 추가
 ```
-/add-comments AppName/Features/MyPage/Presentation/ViewModels/MyPageViewModel.swift
+/add-comments Galpi/Features/MyPage/Presentation/ViewModels/MyPageViewModel.swift
 ```
 
 ## 주의사항

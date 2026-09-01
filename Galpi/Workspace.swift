@@ -1,12 +1,12 @@
 import ProjectDescription
 
 let workspace = Workspace(
-    name: "AppName",
+    name: "Galpi",
     projects: [
         ".",
         "Core/*",
         "Features/*",
-        "AppNameWidget",
-        "AppNameWatchApp",
+        "GalpiWidget",
+        "GalpiWatchApp",
     ]
 )

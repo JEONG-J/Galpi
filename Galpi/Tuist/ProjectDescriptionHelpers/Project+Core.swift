@@ -8,7 +8,7 @@ private let bundleIdBase = "dev.example.core"
 /// `includesTests: true`인 경우 `{name}Tests` unitTests 타겟이 함께 생성됩니다.
 ///
 /// - Parameters:
-///   - name: 타겟 이름 (예: "CoreNetwork", "AppFoundation")
+///   - name: 타겟 이름 (예: "CoreNetwork", "GalpiFoundation")
 ///   - bundleIdSuffix: bundleId 접미사 (예: "network", "foundation")
 ///   - destinations: 지원 플랫폼 (기본값: `.iOS`)
 ///   - deploymentTargets: 배포 대상 (기본값: iOS 26.4)

@@ -62,9 +62,9 @@ git log origin/testFlight..origin/develop --oneline
 앱 버전을 확인합니다:
 
 ```bash
-# Tuist 매니페스트에서 MARKETING_VERSION 추출 (AppName 이 배포 대상이다)
+# Tuist 매니페스트에서 MARKETING_VERSION 추출 (Galpi 이 배포 대상이다)
 # 앞의 `"..."` 패턴은 필수 — 같은 파일 주석에도 MARKETING_VERSION 이 등장한다.
-grep -m1 '"MARKETING_VERSION":' AppName/Tuist/ProjectDescriptionHelpers/Settings+Recommended.swift \
+grep -m1 '"MARKETING_VERSION":' Galpi/Tuist/ProjectDescriptionHelpers/Settings+Recommended.swift \
   | grep -oE '[0-9]+\.[0-9]+(\.[0-9]+)?'
 ```
 
@@ -112,10 +112,10 @@ EOF
 `MARKETING_VERSION` 안에서 빌드 번호가 중복되면 업로드를 거부하므로, 아카이브 전에 올린다:
 
 ```bash
-cd AppName && TUIST_BUILD_NUMBER={이전 빌드 번호 + 1} make generate-open
+cd Galpi && TUIST_BUILD_NUMBER={이전 빌드 번호 + 1} make generate-open
 ```
 
-Xcode 에서 `AppName` 스킴 → Any iOS Device → Product > Archive → Distribute App.
+Xcode 에서 `Galpi` 스킴 → Any iOS Device → Product > Archive → Distribute App.
 
 ## 주의사항
 

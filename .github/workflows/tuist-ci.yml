@@ -1,6 +1,6 @@
 #
 #  tuist-ci.yml
-#  AppName
+#  Galpi
 #
 #  Created by euijjang97 on 7/5/26.
 #
@@ -8,7 +8,7 @@
 name: Tuist CI
 
 # 저장소의 단일 빌드/테스트 게이트.
-# 빌드 진입점은 로컬과 동일하게 AppName/Makefile 을 사용한다(CLAUDE.md 규약).
+# 빌드 진입점은 로컬과 동일하게 Galpi/Makefile 을 사용한다(CLAUDE.md 규약).
 
 on:
   push:
@@ -25,12 +25,12 @@ concurrency:
 
 jobs:
   build-test:
-    name: Build & Test (AppName / Tuist)
+    name: Build & Test (Galpi / Tuist)
     runs-on: macos-26
 
     defaults:
       run:
-        working-directory: AppName
+        working-directory: Galpi
 
     steps:
       - name: Checkout
@@ -68,7 +68,7 @@ jobs:
             exit 0
           fi
 
-          PLIST_DIR="AppName/Resources"
+          PLIST_DIR="Galpi/Resources"
           PLIST_PATH="${PLIST_DIR}/GoogleService-Info.plist"
           mkdir -p "$PLIST_DIR"
 
@@ -99,7 +99,7 @@ jobs:
       - name: Install mise & Tuist (from mise.toml)
         uses: jdx/mise-action@v2
         with:
-          working_directory: AppName
+          working_directory: Galpi
           install: true
           cache: true
 
@@ -109,8 +109,8 @@ jobs:
           path: |
             ~/.cache/tuist
             ~/Library/Caches/org.swift.swiftpm
-            AppName/Tuist/.build
-          key: ${{ runner.os }}-tuist-${{ hashFiles('AppName/Tuist/Package.resolved', 'AppName/Tuist/Package.swift', 'AppName/mise.toml') }}
+            Galpi/Tuist/.build
+          key: ${{ runner.os }}-tuist-${{ hashFiles('Galpi/Tuist/Package.resolved', 'Galpi/Tuist/Package.swift', 'Galpi/mise.toml') }}
           restore-keys: |
             ${{ runner.os }}-tuist-
 
@@ -169,7 +169,7 @@ jobs:
               "content": mention,
               "embeds": [
                   {
-                      "title": "AppName (Tuist) CI Build Result",
+                      "title": "Galpi (Tuist) CI Build Result",
                       "url": os.environ["WORKFLOW_URL"],
                       "color": color,
                       "fields": [

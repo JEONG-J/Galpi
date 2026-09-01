@@ -1,7 +1,7 @@
 import ProjectDescription
 
 /// 호스트 iOS 앱의 번들 ID. Watch 앱 번들 ID는 반드시 `<이 값>.watchkitapp` 이어야 한다.
-private let companionBundleId = "com.example.appname"
+private let companionBundleId = "com.example.galpi"
 
 /// Watch 앱 타겟용 Project 생성 헬퍼
 ///
@@ -9,7 +9,7 @@ private let companionBundleId = "com.example.appname"
 /// WKCompanionAppBundleIdentifier는 호스트 iOS 앱 번들 ID로 자동 설정됩니다.
 ///
 /// - Parameters:
-///   - name: 타겟 이름 (예: "AppNameWatchApp")
+///   - name: 타겟 이름 (예: "GalpiWatchApp")
 ///   - bundleId: Watch 앱 번들 ID
 ///   - entitlements: entitlements 파일 경로 (기본값 nil)
 ///   - dependencies: 의존성 목록

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 #  generate_endpoint_scaffold.sh
-#  AppName
+#  Galpi
 #
 #  Created by euijjang97 on 2/13/26.
 #
@@ -91,7 +91,7 @@ require_cmd jq
 require_cmd sed
 
 ROOT_DIR="$(git rev-parse --show-toplevel)"
-OUT_DIR="$ROOT_DIR/AppName/AppName/Features/$FEATURE/Data/Generated"
+OUT_DIR="$ROOT_DIR/Galpi/Galpi/Features/$FEATURE/Data/Generated"
 TEMPLATE_DIR="$ROOT_DIR/tools/openapi/templates"
 mkdir -p "$OUT_DIR"
 
