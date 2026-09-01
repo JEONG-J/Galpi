@@ -1,6 +1,6 @@
 import ProjectDescription
 
-private let bundleIdBase = "dev.example.core"
+private let bundleIdBase = "com.example.galpi.core"
 
 /// Core 모듈용 Project 생성 헬퍼
 ///
@@ -8,10 +8,10 @@ private let bundleIdBase = "dev.example.core"
 /// `includesTests: true`인 경우 `{name}Tests` unitTests 타겟이 함께 생성됩니다.
 ///
 /// - Parameters:
-///   - name: 타겟 이름 (예: "CoreNetwork", "GalpiFoundation")
-///   - bundleIdSuffix: bundleId 접미사 (예: "network", "foundation")
+///   - name: 타겟 이름 (예: "GalpiKit", "GalpiDesignSystem")
+///   - bundleIdSuffix: bundleId 접미사 (예: "kit", "designsystem")
 ///   - destinations: 지원 플랫폼 (기본값: `.iOS`)
-///   - deploymentTargets: 배포 대상 (기본값: iOS 26.4)
+///   - deploymentTargets: 배포 대상 (기본값: iOS 26.0)
 ///   - dependencies: 메인 타겟 의존성 목록
 ///   - includesTests: `true`이면 `Tests/**` 소스를 사용하는 unitTests 타겟을 함께 생성
 ///   - testDependencies: 테스트 타겟에 추가로 주입할 의존성 (메인 타겟은 자동 포함)
@@ -20,7 +20,7 @@ public func coreProject(
     name: String,
     bundleIdSuffix: String,
     destinations: Destinations = .iOS,
-    deploymentTargets: DeploymentTargets = .iOS("26.4"),
+    deploymentTargets: DeploymentTargets = .iOS("26.0"),
     dependencies: [TargetDependency] = [],
     resources: ResourceFileElements? = nil,
     additionalSettings: SettingsDictionary = [:],

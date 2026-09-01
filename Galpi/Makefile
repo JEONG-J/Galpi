@@ -12,7 +12,9 @@
 SHELL := /bin/bash
 .DEFAULT_GOAL := help
 
-SCHEME ?= Galpi
+# 기본 스킴은 워크스페이스 전체(Galpi-Workspace) — 모듈이 늘어도 `make test` 한 번으로
+# 모든 테스트 타겟을 돈다. 단일 모듈만 볼 때는 SCHEME=GalpiKit 처럼 넘긴다.
+SCHEME ?= Galpi-Workspace
 WORKSPACE := Galpi.xcworkspace
 DESTINATION ?= platform=iOS Simulator,name=iPhone 17 Pro
 CONFIGURATION ?= Debug
@@ -31,10 +33,11 @@ help: ## 이 도움말 출력
 		/^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) }' $(MAKEFILE_LIST)
 	@echo ""
 	@echo "환경 변수 오버라이드 예시:"
+	@echo "  make build SCHEME=Galpi                       # 앱만 빌드"
 	@echo "  make pick                                     # 스킴 골라서 빌드 (대화형)"
 	@echo "  make test-pick                                # 스킴 골라서 테스트 (대화형)"
-	@echo "  make build SCHEME=AuthDomain                  # 모듈 단위 빌드"
-	@echo "  make test  SCHEME=AuthDomain                  # 모듈 단위 테스트"
+	@echo "  make build SCHEME=GalpiKit                    # 모듈 단위 빌드"
+	@echo "  make test  SCHEME=GalpiKit                    # 모듈 단위 테스트"
 	@echo "  make test  DESTINATION='platform=iOS Simulator,name=iPhone 17'"
 	@echo "  make build CONFIGURATION=Release"
 	@echo ""
@@ -46,6 +49,8 @@ help: ## 이 도움말 출력
 
 .PHONY: bootstrap
 bootstrap: check-mise ## 최초 환경 구축 (mise로 tuist 설치)
+	@echo "▶︎ mise.toml 신뢰 등록..."
+	@$(MISE) trust
 	@echo "▶︎ mise.toml 도구 설치 중..."
 	@$(MISE) install
 	@echo "▶︎ tuist 버전 확인"
@@ -182,15 +187,6 @@ test-pick: ## 스킴을 골라 테스트 (fzf 있으면 fuzzy, 없으면 번호 
 	$(MAKE) test SCHEME="$$SCHEME"
 
 TEST_SERVER_URL ?= http://127.0.0.1:8080
-
-.PHONY: test-network
-test-network: ## CoreNetwork 단위+통합 테스트 (서버 살아있으면 통합도 자동 실행)
-	@TEST_SERVER_URL="$(TEST_SERVER_URL)" xcodebuild \
-		-workspace $(WORKSPACE) \
-		-scheme CoreNetwork \
-		-configuration $(CONFIGURATION) \
-		-destination "$(DESTINATION)" \
-		test
 
 ##@ 정리
 
