@@ -95,6 +95,15 @@ public struct LibraryView: View {
             .background(GalpiColor.background)
             .navigationTitle("보관함")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        editingFolder = .create
+                    } label: {
+                        Label("새 폴더", systemImage: "folder.badge.plus")
+                    }
+                }
+            }
             .navigationDestination(for: LinkRoute.self) { route in
                 LinkRouteView(route: route, useCases: useCases, path: $path)
             }
@@ -157,17 +166,42 @@ public struct LibraryView: View {
     private var folderSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             GalpiSectionHeader("폴더") {
-                GalpiSectionAction(viewModel.isEditingFolders ? "완료" : "편집") {
-                    viewModel.isEditingFolders.toggle()
+                if !viewModel.folders.isEmpty {
+                    GalpiSectionAction(viewModel.isEditingFolders ? "완료" : "편집") {
+                        viewModel.isEditingFolders.toggle()
+                    }
                 }
             }
 
-            LazyVGrid(columns: columns, spacing: 12) {
-                ForEach(viewModel.folders) { folder in
-                    folderCell(folder)
+            if viewModel.folders.isEmpty {
+                GalpiEmptyState(
+                    symbol: "folder",
+                    title: "아직 폴더가 없어요",
+                    message: "폴더를 만들면 갈피를 주제별로 모아둘 수 있어요.",
+                    action: .init(title: "새 폴더 만들기") { editingFolder = .create }
+                )
+            } else {
+                LazyVGrid(columns: columns, spacing: 12) {
+                    ForEach(viewModel.folders) { folder in
+                        folderCell(folder)
+                    }
                 }
-                newFolderCell
             }
+        }
+    }
+
+    /// 편집 모드의 `ellipsis` 메뉴와 길게 눌러 여는 컨텍스트 메뉴가 같은 항목을 쓴다.
+    @ViewBuilder
+    private func folderActions(_ folder: Folder) -> some View {
+        Button {
+            editingFolder = .edit(folder.id)
+        } label: {
+            Label("이름·색 바꾸기", systemImage: "pencil")
+        }
+        Button(role: .destructive) {
+            viewModel.delete(folder)
+        } label: {
+            Label("폴더 삭제", systemImage: "trash")
         }
     }
 
@@ -184,8 +218,7 @@ public struct LibraryView: View {
                     Spacer()
                     if viewModel.isEditingFolders {
                         Menu {
-                            Button("이름·색 바꾸기") { editingFolder = .edit(folder.id) }
-                            Button("폴더 삭제", role: .destructive) { viewModel.delete(folder) }
+                            folderActions(folder)
                         } label: {
                             Image(systemName: "ellipsis")
                                 .font(.system(size: 14, weight: .semibold))
@@ -209,28 +242,7 @@ public struct LibraryView: View {
             .galpiCard(cornerRadius: 20)
         }
         .buttonStyle(.plain)
-    }
-
-    private var newFolderCell: some View {
-        Button { editingFolder = .create } label: {
-            VStack(spacing: 7) {
-                Image(systemName: "folder.badge.plus")
-                    .font(.system(size: 18, weight: .medium))
-                Text("새 폴더")
-                    .font(GalpiFont.text(13, .semibold))
-            }
-            .foregroundStyle(GalpiColor.main)
-            .frame(maxWidth: .infinity)
-            .frame(height: 104)
-            .background {
-                RoundedRectangle(cornerRadius: 20)
-                    .strokeBorder(
-                        GalpiColor.dash,
-                        style: StrokeStyle(lineWidth: 1.5, dash: [5, 4])
-                    )
-            }
-        }
-        .buttonStyle(.plain)
+        .contextMenu { folderActions(folder) }
     }
 
     // MARK: - 태그
