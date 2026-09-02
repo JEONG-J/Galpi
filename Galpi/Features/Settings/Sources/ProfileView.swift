@@ -19,8 +19,8 @@ fileprivate enum Constants {
     /// 배지와 라벨 사이 간격 — 구분선이 배지 오른쪽에서 시작하도록 inset 계산에도 쓴다.
     static let badgeSpacing: CGFloat = 11
 
-    /// 카드 행 좌우 여백 — 배경 없는 행들이 시안의 16pt 여백을 그대로 쓴다.
-    static let cardHorizontalInset: CGFloat = 16
+    /// 섹션 헤더 좌우 여백 — 시안의 16pt 를 그대로 쓴다.
+    static let headerHorizontalInset: CGFloat = 16
 }
 
 @MainActor
@@ -149,11 +149,10 @@ public struct ProfileView: View {
     }
 
     /// 카드는 자기 그림자를 갖고 있어 위아래로 번질 자리를 남긴다.
+    /// 좌우 여백은 `.insetGrouped` 섹션 인셋에 맡긴다 — 여기에 여백을 더 얹으면
+    /// '환경설정' 섹션 카드보다 안쪽으로 들어가 카드 좌우 라인이 어긋난다.
     private var cardRowInsets: EdgeInsets {
-        EdgeInsets(
-            top: 8, leading: Constants.cardHorizontalInset,
-            bottom: 8, trailing: Constants.cardHorizontalInset
-        )
+        EdgeInsets(top: 8, leading: 0, bottom: 8, trailing: 0)
     }
 
     // MARK: - Profile
@@ -298,8 +297,8 @@ public struct ProfileView: View {
                 .textCase(nil)
                 .listRowInsets(
                     EdgeInsets(
-                        top: 0, leading: Constants.cardHorizontalInset,
-                        bottom: 8, trailing: Constants.cardHorizontalInset
+                        top: 0, leading: Constants.headerHorizontalInset,
+                        bottom: 8, trailing: Constants.headerHorizontalInset
                     )
                 )
         } footer: {
