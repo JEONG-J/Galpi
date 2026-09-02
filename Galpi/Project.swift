@@ -66,7 +66,13 @@ let project = Project(
             ],
             // 앱 타깃에만 건다 — Share Extension 은 자체 앱 아이콘이 없다.
             settings: .settings(
-                base: ["ASSETCATALOG_COMPILER_APPICON_NAME": "Galpi"]
+                base: [
+                    "ASSETCATALOG_COMPILER_APPICON_NAME": "Galpi",
+                    // Tuist 기본값 `AccentColor` 를 비운다. 이 레포엔 에셋 카탈로그가 없고
+                    // (아이콘은 Icon Composer 번들, 색은 GalpiTheme 토큰) 전역 틴트는
+                    // RootView 의 `.tint(GalpiColor.main)` 이 잡으므로 참조할 컬러셋이 없다.
+                    "ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME": "",
+                ]
             )
         ),
         .target(
