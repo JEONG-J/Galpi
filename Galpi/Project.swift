@@ -43,6 +43,9 @@ let project = Project(
             // 통째로 한 리소스로 넘긴다 — actool 이 이 번들을 읽어 아이콘을 컴파일한다.
             resources: [
                 "Galpi/Resources/Galpi.icon",
+                // 스플래시 리본 — 아이콘 포그라운드와 같은 그림. `.icon` 번들은 actool 이
+                // 컴파일해 버려 안의 png 를 런타임에 못 읽으므로 따로 한 벌 둔다.
+                "Galpi/Resources/SplashRibbon.png",
             ],
             buildableFolders: [
                 "Galpi/Sources",
