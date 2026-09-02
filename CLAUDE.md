@@ -65,7 +65,8 @@ View ←→ ViewModel(@Observable) → UseCase(Protocol) → Repository → Data
      ⚠️ `gh pr create --body "..."`는 템플릿을 불러오지 않는다 — 템플릿을 복사해 채운 뒤
      `--body-file`로 넘길 것. (섹션 표·예시: `docs/claude/git-workflow.md` "PR 본문 형식")
    - 이미 푸시한 브랜치명을 고쳐야 하면 GitHub 브랜치 rename API는 **열려 있던 PR을 닫아버리므로**, rename 후 새 PR을 만들고 닫힌 PR에 후속 PR 번호를 코멘트로 남긴다.
-   - 배포 브랜치는 예외: `testFlight/{번호}` · `release/{번호}` (순차 번호, 이슈번호 아님).
+   - 배포 브랜치는 예외: `testFlight/{번호}`(순차 번호) · `release/{semver}`(앱 버전, 예 `release/1.0.0`).
+     `release/*` 푸시는 Xcode Cloud 아카이브·TestFlight 업로드를 트리거한다 — `docs/claude/git-workflow.md` 참고.
 
 ## 코딩 스타일 (요약)
 
