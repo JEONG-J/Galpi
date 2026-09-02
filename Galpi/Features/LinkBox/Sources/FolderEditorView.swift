@@ -166,7 +166,7 @@ struct FolderEditorView: View {
         VStack(alignment: .leading, spacing: 10) {
             fieldLabel("아이콘")
 
-            TextField("아이콘 검색 (영문 이름)", text: $iconQuery)
+            TextField("아이콘 검색 (한글·영문)", text: $iconQuery)
                 .font(GalpiFont.text(15, .medium))
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
@@ -178,7 +178,7 @@ struct FolderEditorView: View {
                 GalpiEmptyState(
                     symbol: "magnifyingglass",
                     title: "찾는 아이콘이 없어요",
-                    message: "영문 이름 일부로 검색해보세요. 예: heart, book, cart"
+                    message: "한글 낱말이나 영문 이름으로 검색해보세요. 예: 여행, 운동, book"
                 )
             } else {
                 LazyVGrid(columns: gridColumns, spacing: 10) {

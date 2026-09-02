@@ -42,4 +42,31 @@ struct SFSymbolCatalogTests {
         #expect(SFSymbolCatalog.search("zzqqxx", limit: 20).isEmpty)
         #expect(SFSymbolCatalog.search("   ", limit: 20).isEmpty)
     }
+
+    @Test("한글 낱말은 별칭 표를 거쳐 영문 심볼로 이어진다")
+    func koreanQueryMapsToEnglishSymbols() {
+        let results = SFSymbolCatalog.search("하트", limit: 30)
+        #expect(!results.isEmpty)
+        #expect(results.allSatisfy { $0.contains("heart") })
+    }
+
+    @Test("낱말을 다 치기 전에도 접두사로 걸린다")
+    func koreanPrefixMatchesAlias() {
+        let results = SFSymbolCatalog.search("하", limit: 30)
+        #expect(!results.isEmpty)
+        #expect(results.allSatisfy { $0.contains("heart") })
+    }
+
+    @Test("별칭이 여럿이면 결과를 모두 모은다")
+    func koreanAliasUnionsEveryCandidate() {
+        let results = SFSymbolCatalog.search("커피", limit: 20)
+        #expect(results.contains { $0.contains("saucer") })
+        #expect(results.contains { $0.contains("mug") })
+        #expect(Set(results).count == results.count)
+    }
+
+    @Test("별칭 표에 없는 한글은 빈 배열")
+    func emptyWhenKoreanIsNotMapped() {
+        #expect(SFSymbolCatalog.search("형이상학", limit: 20).isEmpty)
+    }
 }
