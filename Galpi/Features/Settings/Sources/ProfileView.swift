@@ -35,7 +35,6 @@ final class ProfileViewModel {
     private(set) var readCount = 0
     private(set) var report: WeeklyReport?
     private(set) var folders: [Folder] = []
-    private(set) var exportText = ""
 
     /// 삭제가 도는 동안 행을 잠가 확인 다이얼로그가 두 번 열리지 않게 한다.
     private(set) var isErasing = false
@@ -59,9 +58,6 @@ final class ProfileViewModel {
         readCount = all.count { !$0.isUnread }
         report = try? useCases.weeklyReport.execute(now: .now, calendar: .current)
         folders = (try? useCases.repository.folders()) ?? []
-        exportText = all
-            .map { "\($0.displayTitle)\n\($0.urlString)" }
-            .joined(separator: "\n\n")
     }
 
     var sinceText: String {
@@ -319,13 +315,6 @@ public struct ProfileView: View {
                 symbol: "cloud.fill", pastel: .cyan, label: "iCloud 동기화",
                 value: viewModel.syncedText, showsChevron: false
             )
-            .settingsRow()
-
-            ShareLink(item: viewModel.exportText) {
-                SettingsRow(
-                    symbol: "square.and.arrow.up", pastel: .gray, label: "데이터 내보내기"
-                )
-            }
             .settingsRow()
 
             Button {

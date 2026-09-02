@@ -299,6 +299,16 @@ struct LinkDetailView: View {
         }
 
         ToolbarItem(placement: .topBarTrailing) {
+            if let link = viewModel.link, let url = link.url {
+                ShareLink(item: url, preview: SharePreview(link.displayTitle)) {
+                    Image(systemName: "square.and.arrow.up")
+                }
+                .tint(GalpiColor.text)
+                .accessibilityLabel("이 갈피 공유")
+            }
+        }
+
+        ToolbarItem(placement: .topBarTrailing) {
             // 다중 선택 툴바와 같은 이유로 색을 명시한다 — 루트 `.tint(GalpiColor.main)` 이
             // 환경을 타고 내려와 `role: .destructive` 의 빨강까지 덮는다.
             Button(role: .destructive) {
