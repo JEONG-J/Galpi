@@ -96,6 +96,16 @@ public struct LibraryView: View {
             .navigationTitle("보관함")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                if !viewModel.folders.isEmpty {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button(viewModel.isEditingFolders ? "완료" : "편집") {
+                            viewModel.isEditingFolders.toggle()
+                        }
+                        .accessibilityLabel(
+                            viewModel.isEditingFolders ? "폴더 편집 완료" : "폴더 편집"
+                        )
+                    }
+                }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         editingFolder = .create
@@ -165,13 +175,7 @@ public struct LibraryView: View {
 
     private var folderSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            GalpiSectionHeader("폴더") {
-                if !viewModel.folders.isEmpty {
-                    GalpiSectionAction(viewModel.isEditingFolders ? "완료" : "편집") {
-                        viewModel.isEditingFolders.toggle()
-                    }
-                }
-            }
+            GalpiSectionHeader("폴더")
 
             if viewModel.folders.isEmpty {
                 GalpiEmptyState(
