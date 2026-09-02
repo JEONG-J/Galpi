@@ -98,12 +98,15 @@ public struct LibraryView: View {
             .toolbar {
                 if !viewModel.folders.isEmpty {
                     ToolbarItem(placement: .topBarTrailing) {
-                        Button(viewModel.isEditingFolders ? "완료" : "편집") {
+                        Button {
                             viewModel.isEditingFolders.toggle()
+                        } label: {
+                            Label(
+                                viewModel.isEditingFolders ? "폴더 편집 완료" : "폴더 편집",
+                                systemImage: viewModel.isEditingFolders
+                                    ? "checkmark" : "folder.badge.gearshape"
+                            )
                         }
-                        .accessibilityLabel(
-                            viewModel.isEditingFolders ? "폴더 편집 완료" : "폴더 편집"
-                        )
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {

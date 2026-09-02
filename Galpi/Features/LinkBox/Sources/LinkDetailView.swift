@@ -271,7 +271,21 @@ struct LinkDetailView: View {
     @ToolbarContentBuilder
     private var toolbarActions: some ToolbarContent {
         ToolbarItem(placement: .topBarTrailing) {
-            // 즐겨찾기는 켜짐/꺼짐이 한눈에 보여야 해서 메뉴에 넣지 않고 밖에 둔다.
+            // 메모 편집/저장은 섹션 헤더에서 툴바로 올렸다 — 화면 액션 진입점을 한곳에 모은다.
+            Button {
+                if viewModel.isEditingMemo {
+                    viewModel.saveMemo()
+                } else {
+                    viewModel.isEditingMemo = true
+                }
+            } label: {
+                Image(systemName: viewModel.isEditingMemo ? "checkmark" : "pencil")
+            }
+            .tint(viewModel.isEditingMemo ? GalpiColor.main : GalpiColor.text)
+            .accessibilityLabel(viewModel.isEditingMemo ? "메모 저장" : "메모 편집")
+        }
+
+        ToolbarItem(placement: .topBarTrailing) {
             let isFavorite = viewModel.link?.isFavorite == true
             Button {
                 viewModel.toggleFavorite()
@@ -283,39 +297,25 @@ struct LinkDetailView: View {
         }
 
         ToolbarItem(placement: .topBarTrailing) {
-            // 나머지 액션은 메뉴로 묶되, 편집 중 '저장'까지 넣으면 저장이 두 탭이 되므로
-            // 그때만 저장 버튼으로 바꿔 단다.
-            if viewModel.isEditingMemo {
-                Button {
-                    viewModel.saveMemo()
-                } label: {
-                    Image(systemName: "checkmark")
+            if let link = viewModel.link, let url = link.url {
+                ShareLink(item: url, preview: SharePreview(link.displayTitle)) {
+                    Image(systemName: "square.and.arrow.up")
                 }
-                .tint(GalpiColor.main)
-                .accessibilityLabel("메모 저장")
-            } else {
-                linkActionMenu
+                .tint(GalpiColor.text)
+                .accessibilityLabel("이 갈피 공유")
             }
         }
-    }
 
-    private var linkActionMenu: some View {
-        Menu {
-            Button {
-                viewModel.isEditingMemo = true
-            } label: {
-                Label("메모 편집", systemImage: "pencil")
-            }
-
+        ToolbarItem(placement: .topBarTrailing) {
+            // 다중 선택 툴바와 같은 이유로 색을 명시한다 — 루트 `.tint(GalpiColor.main)` 이
+            // 환경을 타고 내려와 `role: .destructive` 의 빨강까지 덮는다.
             Button(role: .destructive) {
                 isDeleteConfirmPresented = true
             } label: {
-                Label("삭제", systemImage: "trash")
+                Image(systemName: "trash")
             }
-        } label: {
-            Image(systemName: "ellipsis")
+            .tint(.red)
+            .accessibilityLabel("이 갈피 삭제")
         }
-        .tint(GalpiColor.text)
-        .accessibilityLabel("갈피 관리")
     }
 }
