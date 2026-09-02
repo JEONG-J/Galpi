@@ -55,6 +55,14 @@ public final class GalpiSettings {
     /// 프로필의 '갈피와 함께한 지 N일째' 기준일. 첫 실행 때 한 번 박힌다.
     public private(set) var installedAt: Date
 
+    /// 검색 화면의 '최근 검색' — 최신순. 쓰기는 아래 세 함수로만 한다(중복·상한 규칙이 붙는다).
+    public private(set) var recentSearches: [String] {
+        didSet { defaults.set(recentSearches, forKey: Key.recentSearches) }
+    }
+
+    /// 기록 상한. 검색 화면 한 화면에 담기는 만큼만 남긴다.
+    public static let recentSearchLimit = 10
+
     // MARK: - Function
 
     public init(defaults: UserDefaults? = nil) {
@@ -71,6 +79,8 @@ public final class GalpiSettings {
         lastReminderNotifiedAt = store.object(forKey: Key.lastReminderNotifiedAt) as? Date
         lastSyncedAt = store.object(forKey: Key.lastSyncedAt) as? Date
         nickname = store.string(forKey: Key.nickname) ?? "부지런한 갈피 수집가"
+
+        recentSearches = store.stringArray(forKey: Key.recentSearches) ?? []
 
         if let stored = store.object(forKey: Key.installedAt) as? Date {
             installedAt = stored
@@ -90,6 +100,29 @@ public final class GalpiSettings {
         return max(days, 0) + 1
     }
 
+    /// 검색어 한 건을 기록 맨 위에 올린다.
+    ///
+    /// 같은 말을 다시 검색하면 아래에 쌓지 않고 맨 위로 끌어올린다 — 대소문자만 다른 것도
+    /// 같은 말로 본다. 표기는 마지막에 친 그대로 남긴다.
+    public func recordSearch(_ query: String) {
+        let keyword = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !keyword.isEmpty else { return }
+
+        var updated = recentSearches.filter {
+            $0.caseInsensitiveCompare(keyword) != .orderedSame
+        }
+        updated.insert(keyword, at: 0)
+        recentSearches = Array(updated.prefix(Self.recentSearchLimit))
+    }
+
+    public func removeRecentSearch(_ keyword: String) {
+        recentSearches.removeAll { $0 == keyword }
+    }
+
+    public func clearRecentSearches() {
+        recentSearches = []
+    }
+
     private enum Key {
         static let reminderCadence = "galpi.reminder.cadence"
         static let reminderHour = "galpi.reminder.hour"
@@ -99,5 +132,6 @@ public final class GalpiSettings {
         static let lastSyncedAt = "galpi.sync.lastAt"
         static let nickname = "galpi.profile.nickname"
         static let installedAt = "galpi.profile.installedAt"
+        static let recentSearches = "galpi.search.recents"
     }
 }
