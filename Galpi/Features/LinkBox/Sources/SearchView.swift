@@ -89,10 +89,12 @@ public struct SearchView: View {
     public var body: some View {
         NavigationStack(path: $path) {
             List {
+                // 좌우 여백은 `.insetGrouped` 섹션 인셋에 맡긴다 — 여기에 여백을 더 얹으면
+                // 검색 결과 행보다 안쪽으로 들어가 좌우 라인이 어긋난다.
                 if viewModel.query.trimmingCharacters(in: .whitespaces).isEmpty {
                     tagSuggestions
                         .plainListRow(
-                            insets: EdgeInsets(top: 8, leading: 16, bottom: 24, trailing: 16)
+                            insets: EdgeInsets(top: 8, leading: 0, bottom: 24, trailing: 0)
                         )
                 } else if viewModel.results.isEmpty {
                     GalpiEmptyState(
@@ -101,7 +103,7 @@ public struct SearchView: View {
                         message: "제목·메모·태그·주소에서 찾아봤어요."
                     )
                     .plainListRow(
-                        insets: EdgeInsets(top: 8, leading: 16, bottom: 24, trailing: 16)
+                        insets: EdgeInsets(top: 8, leading: 0, bottom: 24, trailing: 0)
                     )
                 } else {
                     ForEach(viewModel.results) { link in

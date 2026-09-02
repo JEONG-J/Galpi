@@ -44,9 +44,7 @@ struct FilteredLinkListView: View {
                     title: emptyState.title,
                     message: emptyState.message
                 )
-                .plainListRow(
-                    insets: EdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16)
-                )
+                .plainListRow(insets: EdgeInsets(top: 16, leading: 0, bottom: 16, trailing: 0))
             } else {
                 ForEach(links) { link in
                     LinkListRow(link: link, onTogglePin: togglePin) { deletionTarget = $0 }
