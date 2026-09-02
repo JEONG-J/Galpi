@@ -27,6 +27,12 @@ struct FolderEditorView: View {
 
     // MARK: - Property
 
+    /// 시트 안에서 키보드를 받을 수 있는 자리.
+    private enum Field: Hashable {
+        case name
+        case iconQuery
+    }
+
     let target: FolderEditorTarget
     let useCases: GalpiUseCases
     let onFinish: () -> Void
@@ -40,6 +46,8 @@ struct FolderEditorView: View {
     @State private var customColor = Color(rgba: 0x2E5AE5FF)
     @State private var iconName = "folder"
     @State private var iconQuery = ""
+
+    @FocusState private var focusedField: Field?
 
     /// 검색어가 비었을 때 보여줄 추천 아이콘. 시안의 폴더 4종에 쓰인 것부터 앞에 둔다.
     private let iconChoices = [
@@ -56,16 +64,14 @@ struct FolderEditorView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 22) {
-                    preview
+                    VStack(alignment: .leading, spacing: 10) {
+                        fieldLabel("미리보기")
+                        preview
+                    }
 
                     VStack(alignment: .leading, spacing: 10) {
-                        Text("이름")
-                            .font(GalpiFont.text(13, .semibold))
-                            .foregroundStyle(GalpiColor.textSecondary)
-                        TextField("폴더 이름", text: $name)
-                            .font(GalpiFont.text(15, .semibold))
-                            .padding(14)
-                            .background(GalpiColor.surface, in: .rect(cornerRadius: 16))
+                        fieldLabel("이름")
+                        nameField
                     }
 
                     section("색") {
@@ -89,10 +95,14 @@ struct FolderEditorView: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("저장") { save() }
-                        .disabled(name.trimmingCharacters(in: .whitespaces).isEmpty)
+                        .disabled(trimmedName.isEmpty)
                 }
             }
-            .onAppear(perform: loadExisting)
+            .onAppear {
+                loadExisting()
+                // 새 폴더는 이름부터 받는다. 편집은 이름이 이미 차 있어 키보드를 띄우지 않는다.
+                if isCreating { focusedField = .name }
+            }
         }
     }
 
@@ -104,18 +114,40 @@ struct FolderEditorView: View {
 
     private var pastel: GalpiPastel { GalpiPastel(name: palette.rawValue) }
 
+    private var trimmedName: String { name.trimmingCharacters(in: .whitespaces) }
+
+    /// 저장하면 보관함에 이렇게 보인다는 결과 카드 — 탭해도 입력되지 않는다.
+    /// 아래 입력란과 헷갈리지 않도록 라벨·빈 값 문구를 서로 다르게 뒀다.
     private var preview: some View {
-        HStack(spacing: 12) {
+        let displayName = trimmedName.isEmpty ? "이름 없는 폴더" : trimmedName
+        return HStack(spacing: 12) {
             GalpiIconBadge(
                 symbol: iconName, pastel: pastel, size: 44, cornerRadius: 14, iconSize: 20
             )
-            Text(name.isEmpty ? "폴더 이름" : name)
+            Text(displayName)
                 .font(GalpiFont.text(15, .bold))
-                .foregroundStyle(name.isEmpty ? GalpiColor.textTertiary : GalpiColor.text)
+                .foregroundStyle(trimmedName.isEmpty ? GalpiColor.textTertiary : GalpiColor.text)
             Spacer()
         }
         .padding(14)
         .galpiCard(cornerRadius: 20)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("미리보기")
+        .accessibilityValue(displayName)
+    }
+
+    private var nameField: some View {
+        TextField("예: 개발 아티클", text: $name)
+            .font(GalpiFont.text(15, .semibold))
+            .focused($focusedField, equals: .name)
+            .submitLabel(.done)
+            .modifier(InputFieldStyle(isFocused: focusedField == .name))
+    }
+
+    private func fieldLabel(_ title: String) -> some View {
+        Text(title)
+            .font(GalpiFont.text(13, .semibold))
+            .foregroundStyle(GalpiColor.textSecondary)
     }
 
     private func section<Content: View>(
@@ -123,9 +155,7 @@ struct FolderEditorView: View {
         @ViewBuilder content: () -> Content
     ) -> some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text(title)
-                .font(GalpiFont.text(13, .semibold))
-                .foregroundStyle(GalpiColor.textSecondary)
+            fieldLabel(title)
             LazyVGrid(columns: gridColumns, spacing: 10, content: content)
         }
     }
@@ -134,17 +164,15 @@ struct FolderEditorView: View {
     /// 검색어가 있을 때는 SF Symbols 전체에서 찾는다.
     private var iconSection: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("아이콘")
-                .font(GalpiFont.text(13, .semibold))
-                .foregroundStyle(GalpiColor.textSecondary)
+            fieldLabel("아이콘")
 
             TextField("아이콘 검색 (영문 이름)", text: $iconQuery)
                 .font(GalpiFont.text(15, .medium))
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
+                .focused($focusedField, equals: .iconQuery)
                 .submitLabel(.search)
-                .padding(14)
-                .background(GalpiColor.surface, in: .rect(cornerRadius: 16))
+                .modifier(InputFieldStyle(isFocused: focusedField == .iconQuery))
 
             if displayedIcons.isEmpty {
                 GalpiEmptyState(
@@ -252,6 +280,26 @@ struct FolderEditorView: View {
         }
         onFinish()
         dismiss()
+    }
+}
+
+/// 입력란 공통 외형. 테두리로 '눌러서 쓰는 칸'임을 드러내고, 포커스되면 브랜드색으로 강조한다.
+/// 같은 시트의 이름·아이콘 검색 입력란이 서로 다르게 보이지 않도록 한 곳에 모아 둔다.
+fileprivate struct InputFieldStyle: ViewModifier {
+
+    let isFocused: Bool
+
+    func body(content: Content) -> some View {
+        content
+            .padding(14)
+            .background(GalpiColor.surface, in: .rect(cornerRadius: 16))
+            .overlay {
+                RoundedRectangle(cornerRadius: 16)
+                    .strokeBorder(
+                        isFocused ? GalpiColor.main : GalpiColor.dash,
+                        lineWidth: isFocused ? 1.5 : 1
+                    )
+            }
     }
 }
 
