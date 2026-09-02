@@ -123,7 +123,7 @@ struct LinkDetailView: View {
         .background(GalpiColor.background)
         .navigationTitle("링크 노트")
         .toolbarTitleDisplayMode(.inline)
-        .toolbar { toolbarMenu }
+        .toolbar { toolbarActions }
         .safeAreaBar(edge: .bottom) { bottomBar }
         // 시안 ④ 는 하단이 '원문 열기' 버튼이라 탭 바가 없다.
         .toolbar(.hidden, for: .tabBar)
@@ -286,26 +286,28 @@ struct LinkDetailView: View {
     }
 
     @ToolbarContentBuilder
-    private var toolbarMenu: some ToolbarContent {
+    private var toolbarActions: some ToolbarContent {
         ToolbarItem(placement: .topBarTrailing) {
-            Menu {
-                Button {
-                    viewModel.toggleFavorite()
-                } label: {
-                    Label(
-                        viewModel.link?.isFavorite == true ? "즐겨찾기 해제" : "즐겨찾기",
-                        systemImage: viewModel.link?.isFavorite == true ? "star.slash" : "star"
-                    )
-                }
-                Button(role: .destructive) {
-                    isDeleteConfirmPresented = true
-                } label: {
-                    Label("삭제", systemImage: "trash")
-                }
+            let isFavorite = viewModel.link?.isFavorite == true
+            Button {
+                viewModel.toggleFavorite()
             } label: {
-                Image(systemName: "ellipsis")
+                Image(systemName: isFavorite ? "star.fill" : "star")
             }
-            .tint(GalpiColor.text)
+            .tint(isFavorite ? .orange : GalpiColor.text)
+            .accessibilityLabel(isFavorite ? "즐겨찾기 해제" : "즐겨찾기")
+        }
+
+        ToolbarItem(placement: .topBarTrailing) {
+            // 다중 선택 툴바와 같은 이유로 색을 명시한다 — 루트 `.tint(GalpiColor.main)` 이
+            // 환경을 타고 내려와 `role: .destructive` 의 빨강까지 덮는다.
+            Button(role: .destructive) {
+                isDeleteConfirmPresented = true
+            } label: {
+                Image(systemName: "trash")
+            }
+            .tint(.red)
+            .accessibilityLabel("이 갈피 삭제")
         }
     }
 }
