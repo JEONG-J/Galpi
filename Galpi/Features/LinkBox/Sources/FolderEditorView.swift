@@ -74,18 +74,22 @@ struct FolderEditorView: View {
                         nameField
                     }
 
+                    // 아이콘을 색보다 위에 둔다. 아이콘 검색만 키보드를 부르는데, 맨 아래에 있으면
+                    // 검색란 바로 밑의 결과 그리드가 통째로 키보드에 덮인다.
+                    iconSection
+
                     section("색") {
                         ForEach(FolderPalette.allCases, id: \.self) { candidate in
                             swatch(candidate)
                         }
                         customSwatch
                     }
-
-                    iconSection
                 }
                 .padding(16)
             }
             .scrollIndicators(.hidden)
+            // 결과를 훑으려고 그리드를 끌면 키보드가 비켜서 한 화면을 다 쓴다.
+            .scrollDismissesKeyboard(.immediately)
             .background(GalpiColor.background)
             .navigationTitle(isCreating ? "새 폴더" : "폴더 편집")
             .toolbarTitleDisplayMode(.inline)
@@ -306,5 +310,6 @@ fileprivate struct InputFieldStyle: ViewModifier {
 fileprivate enum Constants {
 
     /// 한 번에 보여줄 검색 결과 수. 그리드 길이와 렌더 확인 비용을 같이 묶는다.
-    static let iconSearchLimit = 120
+    /// 6열 × 6줄 — 이보다 길면 아래 '색' 섹션이 검색 결과 뒤로 묻힌다. 더 좁히는 건 검색어 몫.
+    static let iconSearchLimit = 36
 }
