@@ -89,9 +89,12 @@ struct FilteredLinkListView: View {
 
         if isSelecting {
             ToolbarItemGroup(placement: .bottomBar) {
+                // 스와이프 액션과 같은 이유로 색을 명시한다 — 루트 `.tint(GalpiColor.main)` 이
+                // 환경을 타고 내려와 `role: .destructive` 의 빨강까지 덮는다.
                 Button(action: togglePinOnSelection) {
                     Label(bulkPinTitle, systemImage: isPinAction ? "pin.fill" : "pin.slash")
                 }
+                .tint(.orange)
                 .disabled(selection.isEmpty)
                 .accessibilityLabel("선택한 \(selection.count)개 \(bulkPinTitle)")
 
@@ -100,6 +103,7 @@ struct FilteredLinkListView: View {
                 Button(role: .destructive) { isBulkDeleteConfirming = true } label: {
                     Label("삭제", systemImage: "trash")
                 }
+                .tint(.red)
                 .disabled(selection.isEmpty)
                 .accessibilityLabel("선택한 \(selection.count)개 삭제")
             }
