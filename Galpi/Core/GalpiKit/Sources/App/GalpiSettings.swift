@@ -64,13 +64,14 @@ public final class GalpiSettings {
         self.defaults = store
 
         reminderCadence = (store.string(forKey: Key.reminderCadence))
-            .flatMap(ReminderCadence.init(rawValue:)) ?? .everyThreeDays
-        reminderHour = store.object(forKey: Key.reminderHour) as? Int ?? 9
-        isAIOrganizeEnabled = store.object(forKey: Key.aiOrganize) as? Bool ?? true
+            .flatMap(ReminderCadence.init(rawValue:)) ?? Default.reminderCadence
+        reminderHour = store.object(forKey: Key.reminderHour) as? Int ?? Default.reminderHour
+        isAIOrganizeEnabled = store.object(forKey: Key.aiOrganize) as? Bool
+            ?? Default.isAIOrganizeEnabled
         defaultFolderID = store.string(forKey: Key.defaultFolder).flatMap(UUID.init(uuidString:))
         lastReminderNotifiedAt = store.object(forKey: Key.lastReminderNotifiedAt) as? Date
         lastSyncedAt = store.object(forKey: Key.lastSyncedAt) as? Date
-        nickname = store.string(forKey: Key.nickname) ?? "부지런한 갈피 수집가"
+        nickname = store.string(forKey: Key.nickname) ?? Default.nickname
 
         if let stored = store.object(forKey: Key.installedAt) as? Date {
             installedAt = stored
@@ -78,6 +79,23 @@ public final class GalpiSettings {
             installedAt = .now
             store.set(installedAt, forKey: Key.installedAt)
         }
+    }
+
+    /// '모든 데이터 삭제' — 저장된 환경설정을 첫 실행 값으로 되돌린다.
+    ///
+    /// `installedAt` 도 다시 찍는다. 저장·읽음 수가 0으로 돌아간 프로필에 '함께한 지 47일째'만
+    /// 남아 있으면 지운 기록이 어딘가 살아 있는 것처럼 읽히기 때문이다.
+    public func reset(now: Date = .now) {
+        reminderCadence = Default.reminderCadence
+        reminderHour = Default.reminderHour
+        isAIOrganizeEnabled = Default.isAIOrganizeEnabled
+        defaultFolderID = nil
+        lastReminderNotifiedAt = nil
+        lastSyncedAt = nil
+        nickname = Default.nickname
+
+        installedAt = now
+        defaults.set(installedAt, forKey: Key.installedAt)
     }
 
     /// 프로필의 '함께한 지 N일째'. 설치 당일이 1일째다.
@@ -88,6 +106,14 @@ public final class GalpiSettings {
             to: calendar.startOfDay(for: now)
         ).day ?? 0
         return max(days, 0) + 1
+    }
+
+    /// 첫 실행 값 — 초기 로드와 `reset()` 이 같은 값을 봐야 해서 한 곳에 모은다.
+    private enum Default {
+        static let reminderCadence = ReminderCadence.everyThreeDays
+        static let reminderHour = 9
+        static let isAIOrganizeEnabled = true
+        static let nickname = "부지런한 갈피 수집가"
     }
 
     private enum Key {

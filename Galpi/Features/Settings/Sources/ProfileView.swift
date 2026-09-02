@@ -37,6 +37,12 @@ final class ProfileViewModel {
     private(set) var folders: [Folder] = []
     private(set) var exportText = ""
 
+    /// 삭제가 도는 동안 행을 잠가 확인 다이얼로그가 두 번 열리지 않게 한다.
+    private(set) var isErasing = false
+
+    /// 삭제 실패 사유. 성공하면 `nil` 이라 화면은 아무것도 띄우지 않는다.
+    var eraseFailureMessage: String?
+
     var settings: GalpiSettings { useCases.settings }
 
     // MARK: - Function
@@ -109,6 +115,19 @@ final class ProfileViewModel {
         settings.reminderHour = hour
         Task { await useCases.refreshReminder() }
     }
+
+    /// 실패해도 조용히 넘기지 않는다 — 지워진 줄 알고 기기를 넘기는 게 제일 나쁜 결말이라
+    /// 사유를 그대로 띄운다.
+    func eraseAllData() async {
+        isErasing = true
+        do {
+            try await useCases.eraseAllData()
+        } catch {
+            eraseFailureMessage = error.localizedDescription
+        }
+        isErasing = false
+        load()
+    }
 }
 
 /// 내 정보 — 시안 ③ 프레임.
@@ -117,6 +136,7 @@ public struct ProfileView: View {
     // MARK: - Property
 
     @State private var viewModel: ProfileViewModel
+    @State private var showsEraseConfirmation = false
 
     // MARK: - Function
 
@@ -142,6 +162,23 @@ public struct ProfileView: View {
             .scrollContentBackground(.hidden)
             .scrollIndicators(.hidden)
             .background(GalpiColor.background)
+            .confirmationDialog(
+                "모든 데이터를 삭제할까요?",
+                isPresented: $showsEraseConfirmation,
+                titleVisibility: .visible
+            ) {
+                Button("모두 삭제", role: .destructive) {
+                    Task { await viewModel.eraseAllData() }
+                }
+                Button("취소", role: .cancel) {}
+            } message: {
+                Text("갈피·폴더·태그와 환경설정이 이 기기와 iCloud에서 지워져요. 되돌릴 수 없어요.")
+            }
+            .alert("삭제하지 못했어요", isPresented: eraseFailureBinding) {
+                Button("확인", role: .cancel) {}
+            } message: {
+                Text(viewModel.eraseFailureMessage ?? "")
+            }
             .navigationTitle("내 정보")
             .navigationBarTitleDisplayMode(.inline)
         }
@@ -290,6 +327,17 @@ public struct ProfileView: View {
                 )
             }
             .settingsRow()
+
+            Button {
+                showsEraseConfirmation = true
+            } label: {
+                SettingsLabel(
+                    symbol: "trash.fill", pastel: .red, label: "모든 데이터 삭제",
+                    labelColor: GalpiPastel.red.foreground
+                )
+            }
+            .disabled(viewModel.isErasing)
+            .settingsRow()
         } header: {
             Text("환경설정")
                 .font(GalpiFont.sectionTitle)
@@ -328,6 +376,13 @@ public struct ProfileView: View {
         Binding(
             get: { viewModel.settings.isAIOrganizeEnabled },
             set: { viewModel.settings.isAIOrganizeEnabled = $0 }
+        )
+    }
+
+    private var eraseFailureBinding: Binding<Bool> {
+        Binding(
+            get: { viewModel.eraseFailureMessage != nil },
+            set: { if !$0 { viewModel.eraseFailureMessage = nil } }
         )
     }
 
@@ -384,11 +439,14 @@ private struct SettingsLabel: View {
     let pastel: GalpiPastel
     let label: String
 
+    /// 파괴적인 행만 배지 색을 글자에도 그대로 쓴다.
+    var labelColor: Color = GalpiColor.text
+
     var body: some View {
         Label {
             Text(label)
                 .font(GalpiFont.text(14, .medium))
-                .foregroundStyle(GalpiColor.text)
+                .foregroundStyle(labelColor)
         } icon: {
             GalpiIconBadge(
                 symbol: symbol, pastel: pastel,

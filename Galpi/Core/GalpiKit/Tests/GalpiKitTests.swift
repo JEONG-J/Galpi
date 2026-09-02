@@ -447,3 +447,63 @@ struct WeeklyReportUseCaseTests {
         #expect(report.streakDays == 3)
     }
 }
+
+// MARK: - 모든 데이터 삭제
+
+@MainActor
+@Suite("모든 데이터 삭제")
+struct EraseAllDataTests {
+
+    @Test("갈피·폴더·태그가 함께 사라진다")
+    func deletesEveryRecord() throws {
+        let repository = try makeRepository()
+        repository.insert(Folder(name: "개발"))
+        repository.insert(Link(urlString: "https://example.com/a"))
+        _ = try repository.tag(named: "swift")
+        try repository.save()
+
+        try repository.deleteAll()
+
+        #expect(try repository.count(matching: .all) == 0)
+        #expect(try repository.folders().isEmpty)
+        #expect(try repository.tags().isEmpty)
+    }
+
+    @Test("환경설정이 첫 실행 값으로 돌아간다")
+    func resetsSettings() {
+        let settings = makeSettings()
+        settings.reminderCadence = .off
+        settings.reminderHour = 22
+        settings.isAIOrganizeEnabled = false
+        settings.defaultFolderID = UUID()
+        settings.lastSyncedAt = date("2026-09-01T00:00:00Z")
+        settings.nickname = "테스터"
+
+        settings.reset(now: date("2026-09-03T12:00:00Z"))
+
+        #expect(settings.reminderCadence == .everyThreeDays)
+        #expect(settings.reminderHour == 9)
+        #expect(settings.isAIOrganizeEnabled)
+        #expect(settings.defaultFolderID == nil)
+        #expect(settings.lastSyncedAt == nil)
+        #expect(settings.nickname == "부지런한 갈피 수집가")
+        #expect(settings.installedAt == date("2026-09-03T12:00:00Z"))
+    }
+
+    @Test("초기화한 값은 같은 저장소를 다시 열어도 유지된다")
+    func resetSurvivesReload() {
+        let suiteName = "galpi.tests.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suiteName)!
+        defaults.removePersistentDomain(forName: suiteName)
+
+        let settings = GalpiSettings(defaults: defaults)
+        settings.nickname = "테스터"
+        settings.reminderHour = 22
+        settings.reset(now: date("2026-09-03T12:00:00Z"))
+
+        let reloaded = GalpiSettings(defaults: defaults)
+        #expect(reloaded.nickname == "부지런한 갈피 수집가")
+        #expect(reloaded.reminderHour == 9)
+        #expect(reloaded.installedAt == date("2026-09-03T12:00:00Z"))
+    }
+}

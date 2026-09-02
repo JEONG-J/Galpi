@@ -62,6 +62,16 @@ public final class GalpiUseCases {
         self.init(repository: SwiftDataLinkRepository(container: container))
     }
 
+    /// 내 정보의 '모든 데이터 삭제' — 저장소와 환경설정을 첫 실행 상태로 되돌린다.
+    ///
+    /// 예약된 리마인드를 따로 취소하지 않는 이유는 `refreshReminder()` 가 미열람 0을 보고
+    /// 남은 예약을 걷어낸 뒤 아무것도 다시 잡지 않기 때문이다.
+    public func eraseAllData(now: Date = .now) async throws {
+        try repository.deleteAll()
+        settings.reset(now: now)
+        await refreshReminder(now: now)
+    }
+
     /// 앱이 백그라운드로 갈 때 다음 리마인드 한 건을 다시 잡는다.
     public func refreshReminder(now: Date = .now) async {
         reminderScheduler.hour = settings.reminderHour
