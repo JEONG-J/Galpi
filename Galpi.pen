@@ -4921,6 +4921,364 @@
           ]
         }
       ]
+    },
+    {
+      "type": "frame",
+      "id": "r8e9Nn",
+      "x": 2430,
+      "y": 0,
+      "name": "앱 아이콘 · Icon Composer",
+      "clip": true,
+      "fill": "#101014",
+      "layout": "vertical",
+      "gap": 56,
+      "padding": 80,
+      "children": [
+        {
+          "type": "frame",
+          "id": "DpemS",
+          "name": "헤더",
+          "layout": "vertical",
+          "gap": 10,
+          "children": [
+            {
+              "type": "text",
+              "id": "Y1s3A",
+              "name": "타이틀",
+              "fill": "#FFFFFF",
+              "content": "앱 아이콘 · Icon Composer 레이어",
+              "fontFamily": "$font",
+              "fontSize": 48,
+              "fontWeight": "700"
+            },
+            {
+              "type": "text",
+              "id": "Ff0jA",
+              "name": "설명",
+              "fill": "#FFFFFF99",
+              "content": "1024×1024 레이어를 따로 내보내 Icon Composer 에 얹는다 — Background 는 배경 채움, Foreground 는 투명 배경 위 리본 단독.",
+              "fontFamily": "$font",
+              "fontSize": 22,
+              "fontWeight": "500"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "C0XmtD",
+          "name": "레이어 소스",
+          "gap": 64,
+          "children": [
+            {
+              "type": "frame",
+              "id": "ShcDC",
+              "name": "Background 컬럼",
+              "fill": "#1C1C22",
+              "cornerRadius": 24,
+              "layout": "vertical",
+              "gap": 20,
+              "padding": 32,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "L0M3y",
+                  "name": "캡션",
+                  "fill": "#FFFFFFCC",
+                  "content": "Background · 1024×1024",
+                  "fontFamily": "$font",
+                  "fontSize": 22,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "uPzqy",
+                  "name": "AppIcon-Background",
+                  "width": 1024,
+                  "height": 1024,
+                  "fill": {
+                    "type": "gradient",
+                    "gradientType": "linear",
+                    "enabled": true,
+                    "rotation": 180,
+                    "size": {
+                      "height": 1
+                    },
+                    "colors": [
+                      {
+                        "color": "#5E86FF",
+                        "position": 0
+                      },
+                      {
+                        "color": "#1F3FC9",
+                        "position": 1
+                      }
+                    ]
+                  },
+                  "layout": "none"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "Jxzrg",
+              "name": "Foreground 컬럼",
+              "fill": "#1C1C22",
+              "cornerRadius": 24,
+              "layout": "vertical",
+              "gap": 20,
+              "padding": 32,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "XvnYR",
+                  "name": "캡션",
+                  "fill": "#FFFFFFCC",
+                  "content": "Foreground · 1024×1024 · 투명",
+                  "fontFamily": "$font",
+                  "fontSize": 22,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "T1leV",
+                  "name": "AppIcon-Foreground",
+                  "width": 1024,
+                  "height": 1024,
+                  "layout": "none",
+                  "children": [
+                    {
+                      "type": "path",
+                      "id": "T6H41a",
+                      "x": 292,
+                      "y": 214,
+                      "name": "리본",
+                      "geometry": "M0 56a56 56 0 0 1 56-56h328a56 56 0 0 1 56 56v564l-220-180-220 180z",
+                      "viewBox": [
+                        0,
+                        0,
+                        440,
+                        620
+                      ],
+                      "fill": "#FFFFFF",
+                      "width": 440,
+                      "height": 620
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "t7gxq",
+          "name": "프리뷰",
+          "gap": 48,
+          "children": [
+            {
+              "type": "frame",
+              "id": "c9hRzg",
+              "name": "Default 컬럼",
+              "layout": "vertical",
+              "gap": 20,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "W8mPeT",
+                  "name": "캡션",
+                  "fill": "#FFFFFFCC",
+                  "content": "Default",
+                  "fontFamily": "$font",
+                  "fontSize": 22,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "BORYj",
+                  "name": "AppIcon-Default",
+                  "clip": true,
+                  "width": 512,
+                  "height": 512,
+                  "fill": {
+                    "type": "gradient",
+                    "gradientType": "linear",
+                    "enabled": true,
+                    "rotation": 180,
+                    "size": {
+                      "height": 1
+                    },
+                    "colors": [
+                      {
+                        "color": "#5E86FF",
+                        "position": 0
+                      },
+                      {
+                        "color": "#1F3FC9",
+                        "position": 1
+                      }
+                    ]
+                  },
+                  "cornerRadius": 115,
+                  "layout": "none",
+                  "children": [
+                    {
+                      "type": "path",
+                      "id": "cY94b",
+                      "x": 146,
+                      "y": 107,
+                      "name": "리본",
+                      "geometry": "M0 56a56 56 0 0 1 56-56h328a56 56 0 0 1 56 56v564l-220-180-220 180z",
+                      "viewBox": [
+                        0,
+                        0,
+                        440,
+                        620
+                      ],
+                      "fill": "#FFFFFF",
+                      "width": 220,
+                      "height": 310
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "ollD3",
+              "name": "Dark 컬럼",
+              "layout": "vertical",
+              "gap": 20,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "K6g42v",
+                  "name": "캡션",
+                  "fill": "#FFFFFFCC",
+                  "content": "Dark",
+                  "fontFamily": "$font",
+                  "fontSize": 22,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "nUoPr",
+                  "name": "AppIcon-Dark",
+                  "clip": true,
+                  "width": 512,
+                  "height": 512,
+                  "fill": {
+                    "type": "gradient",
+                    "gradientType": "linear",
+                    "enabled": true,
+                    "rotation": 180,
+                    "size": {
+                      "height": 1
+                    },
+                    "colors": [
+                      {
+                        "color": "#2B3A6B",
+                        "position": 0
+                      },
+                      {
+                        "color": "#101024",
+                        "position": 1
+                      }
+                    ]
+                  },
+                  "cornerRadius": 115,
+                  "layout": "none",
+                  "children": [
+                    {
+                      "type": "path",
+                      "id": "bBixu",
+                      "x": 146,
+                      "y": 107,
+                      "name": "리본",
+                      "geometry": "M0 56a56 56 0 0 1 56-56h328a56 56 0 0 1 56 56v564l-220-180-220 180z",
+                      "viewBox": [
+                        0,
+                        0,
+                        440,
+                        620
+                      ],
+                      "fill": "#FFFFFF",
+                      "width": 220,
+                      "height": 310
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "GwLpX",
+              "name": "Tinted (mono) 컬럼",
+              "layout": "vertical",
+              "gap": 20,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "pFgEj",
+                  "name": "캡션",
+                  "fill": "#FFFFFFCC",
+                  "content": "Tinted (mono)",
+                  "fontFamily": "$font",
+                  "fontSize": 22,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "B5w6V",
+                  "name": "AppIcon-Tinted (mono)",
+                  "clip": true,
+                  "width": 512,
+                  "height": 512,
+                  "fill": {
+                    "type": "gradient",
+                    "gradientType": "linear",
+                    "enabled": true,
+                    "rotation": 180,
+                    "size": {
+                      "height": 1
+                    },
+                    "colors": [
+                      {
+                        "color": "#3A3A3C",
+                        "position": 0
+                      },
+                      {
+                        "color": "#1C1C1E",
+                        "position": 1
+                      }
+                    ]
+                  },
+                  "cornerRadius": 115,
+                  "layout": "none",
+                  "children": [
+                    {
+                      "type": "path",
+                      "id": "gKOTD",
+                      "x": 146,
+                      "y": 107,
+                      "name": "리본",
+                      "geometry": "M0 56a56 56 0 0 1 56-56h328a56 56 0 0 1 56 56v564l-220-180-220 180z",
+                      "viewBox": [
+                        0,
+                        0,
+                        440,
+                        620
+                      ],
+                      "fill": "#FFFFFF",
+                      "width": 220,
+                      "height": 310
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
   ],
   "variables": {
