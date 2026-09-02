@@ -39,6 +39,11 @@ let project = Project(
                     ],
                 ]
             ),
+            // Icon Composer 번들. 내부 파일이 개별 복사되지 않도록 `.icon` 디렉터리를
+            // 통째로 한 리소스로 넘긴다 — actool 이 이 번들을 읽어 아이콘을 컴파일한다.
+            resources: [
+                "Galpi/Resources/Galpi.icon",
+            ],
             buildableFolders: [
                 "Galpi/Sources",
             ],
@@ -58,7 +63,11 @@ let project = Project(
                     target: "SettingsPresentation",
                     path: .relativeToRoot("Features/Settings")
                 ),
-            ]
+            ],
+            // 앱 타깃에만 건다 — Share Extension 은 자체 앱 아이콘이 없다.
+            settings: .settings(
+                base: ["ASSETCATALOG_COMPILER_APPICON_NAME": "Galpi"]
+            )
         ),
         .target(
             name: "GalpiShare",
