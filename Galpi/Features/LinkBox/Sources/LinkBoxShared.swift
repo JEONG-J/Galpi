@@ -233,16 +233,20 @@ struct LinkListRow: View {
         .alignmentGuide(.listRowSeparatorLeading) { _ in
             Constants.thumbnailSize + Constants.thumbnailSpacing
         }
+        // 루트 `.tint(GalpiColor.main)` 이 환경을 타고 내려와 `role: .destructive` 의 빨강까지
+        // 덮는다. 스와이프 버튼은 각자 색을 명시해야 의도한 색으로 그려진다.
         .swipeActions(edge: .trailing) {
             Button(role: .destructive) { onDelete(link) } label: {
                 Label("삭제", systemImage: "trash")
             }
+            .tint(.red)
         }
         .swipeActions(edge: .leading) {
             Button { onTogglePin(link) } label: {
                 Label(pinActionTitle, systemImage: link.isPinned ? "pin.slash" : "pin.fill")
             }
-            .tint(GalpiColor.main)
+            // 미열람 카드 뱃지와 같은 systemOrange(`#FF9500`).
+            .tint(.orange)
         }
         .accessibilityAction(named: pinActionTitle) { onTogglePin(link) }
         .accessibilityAction(named: "삭제") { onDelete(link) }
