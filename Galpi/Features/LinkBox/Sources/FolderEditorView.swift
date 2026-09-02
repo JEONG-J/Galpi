@@ -39,8 +39,9 @@ struct FolderEditorView: View {
     @State private var palette: FolderPalette = .blue
     @State private var customColor = Color(rgba: 0x2E5AE5FF)
     @State private var iconName = "folder"
+    @State private var iconQuery = ""
 
-    /// 색과 짝지어 쓰는 아이콘 후보. 시안의 폴더 4종에 쓰인 것부터 앞에 둔다.
+    /// 검색어가 비었을 때 보여줄 추천 아이콘. 시안의 폴더 4종에 쓰인 것부터 앞에 둔다.
     private let iconChoices = [
         "folder", "chevron.left.forwardslash.chevron.right", "paintpalette.fill",
         "fork.knife", "airplane", "book", "cart", "music.note",
@@ -74,11 +75,7 @@ struct FolderEditorView: View {
                         customSwatch
                     }
 
-                    section("아이콘") {
-                        ForEach(iconChoices, id: \.self) { symbol in
-                            iconOption(symbol)
-                        }
-                    }
+                    iconSection
                 }
                 .padding(16)
             }
@@ -133,6 +130,48 @@ struct FolderEditorView: View {
         }
     }
 
+    /// 추천 12종만 두면 그 밖의 아이콘을 쓸 방법이 없어서, 위에 검색창을 두고
+    /// 검색어가 있을 때는 SF Symbols 전체에서 찾는다.
+    private var iconSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("아이콘")
+                .font(GalpiFont.text(13, .semibold))
+                .foregroundStyle(GalpiColor.textSecondary)
+
+            TextField("아이콘 검색 (영문 이름)", text: $iconQuery)
+                .font(GalpiFont.text(15, .medium))
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled()
+                .submitLabel(.search)
+                .padding(14)
+                .background(GalpiColor.surface, in: .rect(cornerRadius: 16))
+
+            if displayedIcons.isEmpty {
+                GalpiEmptyState(
+                    symbol: "magnifyingglass",
+                    title: "찾는 아이콘이 없어요",
+                    message: "영문 이름 일부로 검색해보세요. 예: heart, book, cart"
+                )
+            } else {
+                LazyVGrid(columns: gridColumns, spacing: 10) {
+                    ForEach(displayedIcons, id: \.self) { symbol in
+                        iconOption(symbol)
+                    }
+                }
+            }
+        }
+    }
+
+    /// 검색어가 있으면 전체 심볼에서, 없으면 추천 목록에서 고른다. 편집으로 들어온 폴더가
+    /// 추천에 없는 아이콘을 쓰고 있으면 맨 앞에 붙여 선택 상태가 보이게 한다.
+    private var displayedIcons: [String] {
+        let query = iconQuery.trimmingCharacters(in: .whitespaces)
+        guard query.isEmpty else {
+            return SFSymbolCatalog.search(query, limit: Constants.iconSearchLimit)
+        }
+        return iconChoices.contains(iconName) ? iconChoices : [iconName] + iconChoices
+    }
+
     private func swatch(_ candidate: FolderPalette) -> some View {
         let candidatePastel = GalpiPastel(name: candidate.rawValue)
         return Button { palette = candidate } label: {
@@ -185,6 +224,7 @@ struct FolderEditorView: View {
                 )
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(symbol)
     }
 
     private func loadExisting() {
@@ -193,10 +233,11 @@ struct FolderEditorView: View {
         else { return }
         name = folder.name
         palette = folder.color
-        iconName = folder.iconName
         if palette.isCustom, let picked = Color(galpiHex: palette.rawValue) {
             customColor = picked
         }
+        // 예전 버전이 남긴 이름이 지금 OS 에서 안 그려질 수 있다. 그때는 기본값으로 되돌린다.
+        iconName = SFSymbolCatalog.isRenderable(folder.iconName) ? folder.iconName : "folder"
     }
 
     private func save() {
@@ -212,4 +253,10 @@ struct FolderEditorView: View {
         onFinish()
         dismiss()
     }
+}
+
+fileprivate enum Constants {
+
+    /// 한 번에 보여줄 검색 결과 수. 그리드 길이와 렌더 확인 비용을 같이 묶는다.
+    static let iconSearchLimit = 120
 }
