@@ -117,6 +117,16 @@ struct LinkDetailView: View {
                 .padding(.horizontal, 16)
                 .padding(.top, 6)
                 .padding(.bottom, 24)
+            } else {
+                // 삭제된 갈피 id 로 딥링크(`galpi://link/{uuid}`)가 들어오면 여기로 떨어진다.
+                // 백지 대신 안내를 깔고, 반응 없는 툴바·하단 바는 아래에서 함께 내린다.
+                GalpiEmptyState(
+                    symbol: "bookmark.slash",
+                    title: "갈피를 찾을 수 없어요",
+                    message: "이미 삭제됐거나 열 수 없는 갈피예요. 이전 화면으로 돌아가 주세요."
+                )
+                .padding(.horizontal, 16)
+                .padding(.top, 6)
             }
         }
         .scrollIndicators(.hidden)
@@ -260,62 +270,77 @@ struct LinkDetailView: View {
 
     // MARK: - 하단 바
 
+    @ViewBuilder
     private var bottomBar: some View {
-        GalpiPrimaryButton("원문 열기", symbol: "arrow.up.right") {
-            viewModel.openOriginal(using: openURL)
+        if viewModel.link != nil {
+            GalpiPrimaryButton("원문 열기", symbol: "arrow.up.right") {
+                viewModel.openOriginal(using: openURL)
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 10)
     }
 
     @ToolbarContentBuilder
     private var toolbarActions: some ToolbarContent {
-        ToolbarItem(placement: .topBarTrailing) {
-            // 메모 편집/저장은 섹션 헤더에서 툴바로 올렸다 — 화면 액션 진입점을 한곳에 모은다.
-            Button {
-                if viewModel.isEditingMemo {
-                    viewModel.saveMemo()
-                } else {
-                    viewModel.isEditingMemo = true
+        // 즐겨찾기·삭제·공유·메모 편집이 전부 `guard let link` 에 걸려 no-op 이 되므로,
+        // 갈피를 못 찾았을 때는 눌리지 않는 버튼을 남기지 않고 통째로 내린다.
+        if viewModel.link != nil {
+            ToolbarItem(placement: .topBarTrailing) {
+                // 메모 편집/저장은 섹션 헤더에서 툴바로 올렸다 — 화면 액션 진입점을 한곳에 모은다.
+                Button {
+                    if viewModel.isEditingMemo {
+                        viewModel.saveMemo()
+                    } else {
+                        viewModel.isEditingMemo = true
+                    }
+                } label: {
+                    Image(systemName: viewModel.isEditingMemo ? "checkmark" : "pencil")
                 }
-            } label: {
-                Image(systemName: viewModel.isEditingMemo ? "checkmark" : "pencil")
+                .tint(viewModel.isEditingMemo ? GalpiColor.main : GalpiColor.text)
+                .accessibilityLabel(viewModel.isEditingMemo ? "메모 저장" : "메모 편집")
             }
-            .tint(viewModel.isEditingMemo ? GalpiColor.main : GalpiColor.text)
-            .accessibilityLabel(viewModel.isEditingMemo ? "메모 저장" : "메모 편집")
-        }
 
-        ToolbarItem(placement: .topBarTrailing) {
-            let isFavorite = viewModel.link?.isFavorite == true
-            Button {
-                viewModel.toggleFavorite()
-            } label: {
-                Image(systemName: isFavorite ? "star.fill" : "star")
-            }
-            .tint(isFavorite ? .orange : GalpiColor.text)
-            .accessibilityLabel(isFavorite ? "즐겨찾기 해제" : "즐겨찾기")
-        }
-
-        ToolbarItem(placement: .topBarTrailing) {
-            if let link = viewModel.link, let url = link.url {
-                ShareLink(item: url, preview: SharePreview(link.displayTitle)) {
-                    Image(systemName: "square.and.arrow.up")
+            ToolbarItem(placement: .topBarTrailing) {
+                let isFavorite = viewModel.link?.isFavorite == true
+                Button {
+                    viewModel.toggleFavorite()
+                } label: {
+                    Image(systemName: isFavorite ? "star.fill" : "star")
                 }
-                .tint(GalpiColor.text)
-                .accessibilityLabel("이 갈피 공유")
+                .tint(isFavorite ? .orange : GalpiColor.text)
+                .accessibilityLabel(isFavorite ? "즐겨찾기 해제" : "즐겨찾기")
             }
-        }
 
-        ToolbarItem(placement: .topBarTrailing) {
-            // 다중 선택 툴바와 같은 이유로 색을 명시한다 — 루트 `.tint(GalpiColor.main)` 이
-            // 환경을 타고 내려와 `role: .destructive` 의 빨강까지 덮는다.
-            Button(role: .destructive) {
-                isDeleteConfirmPresented = true
-            } label: {
-                Image(systemName: "trash")
+            ToolbarItem(placement: .topBarTrailing) {
+                if let link = viewModel.link, let url = link.url {
+                    ShareLink(item: url, preview: SharePreview(link.displayTitle)) {
+                        Image(systemName: "square.and.arrow.up")
+                    }
+                    .tint(GalpiColor.text)
+                    .accessibilityLabel("이 갈피 공유")
+                }
             }
-            .tint(.red)
-            .accessibilityLabel("이 갈피 삭제")
+
+            ToolbarItem(placement: .topBarTrailing) {
+                // 다중 선택 툴바와 같은 이유로 색을 명시한다 — 루트 `.tint(GalpiColor.main)` 이
+                // 환경을 타고 내려와 `role: .destructive` 의 빨강까지 덮는다.
+                Button(role: .destructive) {
+                    isDeleteConfirmPresented = true
+                } label: {
+                    Image(systemName: "trash")
+                }
+                .tint(.red)
+                .accessibilityLabel("이 갈피 삭제")
+            }
         }
     }
 }
+
+#if DEBUG
+#Preview("갈피 없음") {
+    NavigationStack {
+        LinkDetailView(linkID: UUID(), useCases: .empty())
+    }
+}
+#endif
