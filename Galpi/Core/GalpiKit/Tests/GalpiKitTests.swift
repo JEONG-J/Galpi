@@ -478,6 +478,7 @@ struct EraseAllDataTests {
         settings.defaultFolderID = UUID()
         settings.lastSyncedAt = date("2026-09-01T00:00:00Z")
         settings.nickname = "테스터"
+        settings.addRecentSearch("스위프트")
 
         settings.reset(now: date("2026-09-03T12:00:00Z"))
 
@@ -487,6 +488,7 @@ struct EraseAllDataTests {
         #expect(settings.defaultFolderID == nil)
         #expect(settings.lastSyncedAt == nil)
         #expect(settings.nickname == "부지런한 갈피 수집가")
+        #expect(settings.recentSearches.isEmpty)
         #expect(settings.installedAt == date("2026-09-03T12:00:00Z"))
     }
 
@@ -505,5 +507,87 @@ struct EraseAllDataTests {
         #expect(reloaded.nickname == "부지런한 갈피 수집가")
         #expect(reloaded.reminderHour == 9)
         #expect(reloaded.installedAt == date("2026-09-03T12:00:00Z"))
+    }
+}
+
+// MARK: - 최근 검색 기록
+
+@MainActor
+@Suite("최근 검색 기록")
+struct RecentSearchTests {
+
+    @Test("검색한 순서의 역순으로 쌓인다")
+    func keepsNewestFirst() {
+        let settings = makeSettings()
+        settings.addRecentSearch("스위프트")
+        settings.addRecentSearch("옵저베이션")
+
+        #expect(settings.recentSearches == ["옵저베이션", "스위프트"])
+    }
+
+    @Test("같은 말을 다시 검색하면 줄이 늘지 않고 맨 위로 올라온다")
+    func movesDuplicateToTop() {
+        let settings = makeSettings()
+        settings.addRecentSearch("스위프트")
+        settings.addRecentSearch("옵저베이션")
+        settings.addRecentSearch("스위프트")
+
+        #expect(settings.recentSearches == ["스위프트", "옵저베이션"])
+    }
+
+    @Test("대소문자만 다른 말도 같은 말로 본다")
+    func treatsCaseInsensitiveMatchAsDuplicate() {
+        let settings = makeSettings()
+        settings.addRecentSearch("SwiftUI")
+        settings.addRecentSearch("swiftui")
+
+        #expect(settings.recentSearches == ["swiftui"])
+    }
+
+    @Test("앞뒤 공백을 털고, 빈 말은 남기지 않는다")
+    func ignoresBlankKeyword() {
+        let settings = makeSettings()
+        settings.addRecentSearch("  스위프트  ")
+        settings.addRecentSearch("   ")
+        settings.addRecentSearch("")
+
+        #expect(settings.recentSearches == ["스위프트"])
+    }
+
+    @Test("최대 10개까지만 남고 오래된 것부터 밀려난다")
+    func capsAtTen() {
+        let settings = makeSettings()
+        for index in 1...12 {
+            settings.addRecentSearch("검색어\(index)")
+        }
+
+        #expect(settings.recentSearches.count == 10)
+        #expect(settings.recentSearches.first == "검색어12")
+        #expect(settings.recentSearches.last == "검색어3")
+    }
+
+    @Test("한 건 삭제·전체 삭제가 각각 동작한다")
+    func removesOneAndAll() {
+        let settings = makeSettings()
+        settings.addRecentSearch("스위프트")
+        settings.addRecentSearch("옵저베이션")
+
+        settings.removeRecentSearch("스위프트")
+        #expect(settings.recentSearches == ["옵저베이션"])
+
+        settings.clearRecentSearches()
+        #expect(settings.recentSearches.isEmpty)
+    }
+
+    @Test("기록은 저장소를 다시 열어도 남아 있다")
+    func survivesReload() {
+        let suiteName = "galpi.tests.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suiteName)!
+        defaults.removePersistentDomain(forName: suiteName)
+
+        let settings = GalpiSettings(defaults: defaults)
+        settings.addRecentSearch("스위프트")
+
+        #expect(GalpiSettings(defaults: defaults).recentSearches == ["스위프트"])
     }
 }

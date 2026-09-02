@@ -24,6 +24,9 @@ final class SearchViewModel {
     /// 태그가 없는 이유가 '저장이 아예 없어서'인지 '태그만 안 붙어서'인지 가른다.
     var hasSavedLinks: Bool { !allLinks.isEmpty }
 
+    /// 저장·중복 제거·상한 규칙은 `GalpiSettings` 가 갖는다. 여기선 그대로 비춘다.
+    var recentSearches: [String] { useCases.settings.recentSearches }
+
     var query = "" {
         didSet { filter() }
     }
@@ -44,6 +47,24 @@ final class SearchViewModel {
             .filter { $0.linkCount > 0 }
             .sorted { $0.linkCount > $1.linkCount }
         filter()
+    }
+
+    /// 키보드 검색을 눌러 검색어를 확정한 순간에만 기록에 남긴다 — 한 글자씩 칠 때마다 남기면
+    /// '최'·'최근'·'최근검색'이 줄줄이 쌓인다.
+    func recordSearch() {
+        useCases.settings.addRecentSearch(query)
+    }
+
+    func search(_ keyword: String) {
+        query = keyword
+    }
+
+    func removeRecentSearch(_ keyword: String) {
+        useCases.settings.removeRecentSearch(keyword)
+    }
+
+    func clearRecentSearches() {
+        useCases.settings.clearRecentSearches()
     }
 
     private func filter() {
@@ -92,6 +113,8 @@ public struct SearchView: View {
                 // 좌우 여백은 `.insetGrouped` 섹션 인셋에 맡긴다 — 여기에 여백을 더 얹으면
                 // 검색 결과 행보다 안쪽으로 들어가 좌우 라인이 어긋난다.
                 if viewModel.query.trimmingCharacters(in: .whitespaces).isEmpty {
+                    recentSearchSection
+
                     tagSuggestions
                         .plainListRow(
                             insets: EdgeInsets(top: 8, leading: 0, bottom: 24, trailing: 0)
@@ -115,7 +138,10 @@ public struct SearchView: View {
             .scrollContentBackground(.hidden)
             .scrollIndicators(.hidden)
             .background(GalpiColor.background)
+            // 스크롤에 따라 접히는 라지 타이틀은 검색 화면에서 '최근 검색' 헤더와 겹쳐 읽힌다.
+            // 상단에 고정되는 inline 로 둔다.
             .navigationTitle("검색")
+            .navigationBarTitleDisplayMode(.inline)
             .navigationDestination(for: LinkRoute.self) { route in
                 LinkRouteView(route: route, useCases: useCases)
             }
@@ -126,6 +152,7 @@ public struct SearchView: View {
             )
         }
         .searchable(text: $viewModel.query, prompt: "제목·메모·태그로 찾기")
+        .onSubmit(of: .search) { viewModel.recordSearch() }
         .onAppear { viewModel.load() }
     }
 
@@ -137,22 +164,66 @@ public struct SearchView: View {
         viewModel.load()
     }
 
-    private var tagSuggestions: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            // 태그가 하나도 없을 때 '많이 쓴 태그'라는 제목은 어색하다.
-            GalpiSectionHeader(viewModel.suggestedTags.isEmpty ? "태그" : "많이 쓴 태그")
+    /// 기록이 없으면 섹션째로 그리지 않는다 — 빈 '최근 검색' 헤더만 남는 게 더 어색하다.
+    @ViewBuilder
+    private var recentSearchSection: some View {
+        if !viewModel.recentSearches.isEmpty {
+            Section {
+                ForEach(viewModel.recentSearches, id: \.self, content: recentSearchRow)
+            } header: {
+                GalpiSectionHeader("최근 검색") {
+                    GalpiSectionAction("모두 지우기") { viewModel.clearRecentSearches() }
+                }
+                .textCase(nil)
+                .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 8, trailing: 16))
+            }
+        }
+    }
 
-            // 태그가 없다고 섹션을 통째로 지우면 검색창 아래가 텅 빈다.
-            if viewModel.suggestedTags.isEmpty {
-                emptyTagState
-            } else {
-                GalpiFlowLayout(spacing: 8, lineSpacing: 8) {
-                    ForEach(viewModel.suggestedTags.prefix(12)) { tag in
-                        Button { viewModel.query = tag.name } label: {
-                            GalpiChip("#\(tag.name)", count: tag.linkCount)
-                        }
-                        .buttonStyle(.plain)
+    /// 탭하면 그 말로 다시 검색한다. 스와이프 삭제는 VoiceOver 로 닿지 않으므로
+    /// 같은 동작을 커스텀 액션으로도 연다 — `LinkListRow` 와 같은 규칙이다.
+    private func recentSearchRow(_ keyword: String) -> some View {
+        Button { viewModel.search(keyword) } label: {
+            HStack(spacing: 10) {
+                Image(systemName: "clock.arrow.circlepath")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(GalpiColor.textTertiary)
+
+                Text(keyword)
+                    .font(GalpiFont.text(14, .medium))
+                    .foregroundStyle(GalpiColor.text)
+                    .lineLimit(1)
+
+                Spacer(minLength: 0)
+            }
+            .contentShape(.rect)
+        }
+        .buttonStyle(.plain)
+        .listRowBackground(GalpiColor.surface)
+        .listRowInsets(EdgeInsets(top: 11, leading: 14, bottom: 11, trailing: 14))
+        .swipeActions(edge: .trailing) {
+            // 루트 `.tint(GalpiColor.main)` 이 `role: .destructive` 의 빨강까지 덮는다.
+            Button(role: .destructive) { viewModel.removeRecentSearch(keyword) } label: {
+                Label("삭제", systemImage: "trash")
+            }
+            .tint(.red)
+        }
+        .accessibilityAction(named: "삭제") { viewModel.removeRecentSearch(keyword) }
+    }
+
+    /// 시안의 태그 칩 — 헤더 없이 칩만 놓는다. '#태그'라는 표기로 이미 무엇인지 읽힌다.
+    @ViewBuilder
+    private var tagSuggestions: some View {
+        // 태그가 없다고 섹션을 통째로 지우면 검색창 아래가 텅 빈다.
+        if viewModel.suggestedTags.isEmpty {
+            emptyTagState
+        } else {
+            GalpiFlowLayout(spacing: 8, lineSpacing: 8) {
+                ForEach(viewModel.suggestedTags.prefix(12)) { tag in
+                    Button { viewModel.search(tag.name) } label: {
+                        GalpiChip("#\(tag.name)", count: tag.linkCount)
                     }
+                    .buttonStyle(.plain)
                 }
             }
         }
