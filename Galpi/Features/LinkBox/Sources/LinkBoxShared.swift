@@ -203,7 +203,7 @@ struct LinkRow: View {
 
 // MARK: - 링크 목록 행
 
-/// `List` 안의 링크 한 줄 — 탭하면 상세, 왼쪽 스와이프는 상단 고정, 오른쪽 스와이프는 삭제.
+/// `List` 안의 링크 한 줄 — 탭하면 상세, 오른→왼쪽 스와이프에 상단 고정·삭제가 함께 열린다.
 ///
 /// 스와이프는 VoiceOver 로 닿지 않으므로 같은 두 동작을 커스텀 액션으로도 연다.
 struct LinkListRow: View {
@@ -235,13 +235,15 @@ struct LinkListRow: View {
         }
         // 루트 `.tint(GalpiColor.main)` 이 환경을 타고 내려와 `role: .destructive` 의 빨강까지
         // 덮는다. 스와이프 버튼은 각자 색을 명시해야 의도한 색으로 그려진다.
+        //
+        // 먼저 선언한 버튼이 가장 바깥이자 풀 스와이프 대상이다. 삭제를 앞에 둬야
+        // 화면에는 `[고정][삭제]` 로 놓이고, 끝까지 밀면 삭제 확인 다이얼로그로 이어진다.
         .swipeActions(edge: .trailing) {
             Button(role: .destructive) { onDelete(link) } label: {
                 Label("삭제", systemImage: "trash")
             }
             .tint(.red)
-        }
-        .swipeActions(edge: .leading) {
+
             Button { onTogglePin(link) } label: {
                 Label(pinActionTitle, systemImage: link.isPinned ? "pin.slash" : "pin.fill")
             }
