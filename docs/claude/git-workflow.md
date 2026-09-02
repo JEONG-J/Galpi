@@ -21,10 +21,31 @@ Git Flow + **연속 브랜치 파생** 지원
 
 ## 배포 브랜치 전략
 
-- **TestFlight 배포**: `testFlight/{번호}` 브랜치 생성 → `testFlight`으로 PR 머지
-- **Release 배포**: `release/{번호}` 브랜치 생성 → `release`로 PR 머지
-- 배포 브랜치는 `develop`에서 분기하여 번호를 순차적으로 매김
+- **TestFlight 배포**: `testFlight/{번호}` 브랜치 생성 → `testFlight`으로 PR 머지 (순차 번호)
+- **Release 배포**: `release/{semver}` 브랜치 생성 → `release`로 PR 머지 (예: `release/1.0.0`)
+- 배포 브랜치는 `develop`에서 분기한다 — TestFlight 은 순차 번호, Release 는 **앱 버전(semver)**
 - 직접 푸시 금지, 반드시 PR을 통해 머지
+- `release/*` 푸시는 **Xcode Cloud 를 트리거**한다 (아래 참고)
+
+## Xcode Cloud
+
+`release/*` 브랜치를 푸시하면 Xcode Cloud 가 Archive → TestFlight 업로드까지 자동 수행한다.
+
+**레포 쪽 (완료)** — `Galpi/ci_scripts/ci_post_clone.sh`
+
+이 레포는 Tuist 기반이라 `.xcodeproj` / `.xcworkspace` 가 gitignore 대상이다. Xcode Cloud 는
+클론 직후 빌드할 프로젝트를 찾지 못하므로, post-clone 스크립트가 mise 설치 → `make bootstrap`
+(mise.toml 의 tuist 버전 고정) → `tuist install` → `tuist generate` 로 `Galpi.xcworkspace` 를 만든다.
+스크립트는 실행 권한(`chmod +x`)이 있어야 하고, 위치는 워크스페이스와 같은 레벨인 `Galpi/ci_scripts/` 다.
+
+**App Store Connect 쪽 (수동 설정 — 레포에서 자동화 불가)**
+
+1. App Store Connect → 앱 → Xcode Cloud → **Create Workflow**
+2. Start Condition: **Branch Changes** / 브랜치 패턴 `release/*`
+3. Environment: 최신 Xcode + macOS, Workspace `Galpi/Galpi.xcworkspace`, Scheme `Galpi`
+4. Action: **Archive (iOS)** — Deployment Preparation은 `TestFlight (Internal Testing Only)`
+5. Post-Action: **TestFlight Internal Testing** — 배포할 내부 테스터 그룹 지정
+6. 번들 ID `com.app.galpi` 의 서명/프로비저닝이 Xcode Cloud 에서 통과하는지 첫 빌드로 확인
 
 ## 커밋 형식
 
