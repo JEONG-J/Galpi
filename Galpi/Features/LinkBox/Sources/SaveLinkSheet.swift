@@ -46,7 +46,7 @@ public final class SaveLinkViewModel {
     var displayTitle: String { title.isEmpty ? host : title }
 
     var selectedFolderName: String {
-        folders.first { $0.id == selectedFolderID }?.name ?? "받은함"
+        folders.first { $0.id == selectedFolderID }?.name ?? Folder.unfiledName
     }
 
     var selectedFolderPastel: GalpiPastel {
@@ -204,7 +204,7 @@ public struct SaveLinkSheet: View {
 
     private var folderRow: some View {
         Menu {
-            Button("받은함") { viewModel.selectedFolderID = nil }
+            Button(Folder.unfiledName) { viewModel.selectedFolderID = nil }
             ForEach(viewModel.folders) { folder in
                 Button(folder.name) { viewModel.selectedFolderID = folder.id }
             }

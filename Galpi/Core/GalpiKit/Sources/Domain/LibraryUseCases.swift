@@ -36,7 +36,7 @@ public protocol ManageFolderUseCase {
     func update(folderID: UUID, color: FolderPalette?, iconName: String?) throws
     /// `orderedIDs` 순서대로 `sortOrder` 를 다시 매긴다.
     func reorder(orderedIDs: [UUID]) throws
-    /// 폴더만 지운다. 안에 있던 링크는 삭제되지 않고 받은함으로 돌아간다.
+    /// 폴더만 지운다. 안에 있던 링크는 삭제되지 않고 미분류로 돌아간다.
     /// 기본 저장 폴더는 `ManageFolderError.folderIsDefaultDestination` 으로 거절한다.
     func delete(folderID: UUID) throws
 }

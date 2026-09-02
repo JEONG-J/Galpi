@@ -101,7 +101,7 @@ public enum GalpiSampleData {
                 folder: folders[3],
                 tags: try tags("맛집", "읽을거리")
             ),
-            // 폴더 미지정 = 받은함.
+            // 폴더 미지정 = 미분류.
             Link(
                 urlString: "https://news.example.com/weekly-digest",
                 title: "이번 주 개발 뉴스 다이제스트",
