@@ -271,8 +271,20 @@ struct LinkDetailView: View {
     @ToolbarContentBuilder
     private var toolbarActions: some ToolbarContent {
         ToolbarItem(placement: .topBarTrailing) {
-            // 아이콘 3개가 나열되면 산만해서 하나로 묶는다. 다만 편집 중 '저장'까지 메뉴에
-            // 넣으면 저장이 두 탭이 되므로, 그때만 저장 버튼을 직접 노출한다.
+            // 즐겨찾기는 켜짐/꺼짐이 한눈에 보여야 해서 메뉴에 넣지 않고 밖에 둔다.
+            let isFavorite = viewModel.link?.isFavorite == true
+            Button {
+                viewModel.toggleFavorite()
+            } label: {
+                Image(systemName: isFavorite ? "star.fill" : "star")
+            }
+            .tint(isFavorite ? .orange : GalpiColor.text)
+            .accessibilityLabel(isFavorite ? "즐겨찾기 해제" : "즐겨찾기")
+        }
+
+        ToolbarItem(placement: .topBarTrailing) {
+            // 나머지 액션은 메뉴로 묶되, 편집 중 '저장'까지 넣으면 저장이 두 탭이 되므로
+            // 그때만 저장 버튼으로 바꿔 단다.
             if viewModel.isEditingMemo {
                 Button {
                     viewModel.saveMemo()
@@ -288,22 +300,11 @@ struct LinkDetailView: View {
     }
 
     private var linkActionMenu: some View {
-        let isFavorite = viewModel.link?.isFavorite == true
-
-        return Menu {
+        Menu {
             Button {
                 viewModel.isEditingMemo = true
             } label: {
                 Label("메모 편집", systemImage: "pencil")
-            }
-
-            Button {
-                viewModel.toggleFavorite()
-            } label: {
-                Label(
-                    isFavorite ? "즐겨찾기 해제" : "즐겨찾기",
-                    systemImage: isFavorite ? "star.slash" : "star"
-                )
             }
 
             Button(role: .destructive) {
