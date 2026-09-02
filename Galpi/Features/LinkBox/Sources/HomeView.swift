@@ -9,6 +9,17 @@ import GalpiDesignSystem
 import GalpiKit
 import SwiftUI
 
+fileprivate enum Constants {
+
+    /// 캐러셀 섹션은 `listSectionMargins(.horizontal, 0)` 으로 스크롤 뷰포트를 화면 좌우 끝까지 넓힌다.
+    /// 걷어낸 섹션 여백(`insetGrouped` compact 기본 16)을 콘텐츠가 직접 얹어야
+    /// 카드·빈 상태가 '이번 주 소비율'·'최근 저장' 카드와 같은 x 에 남는다.
+    static let unreadContentInset: CGFloat = 16
+
+    /// 섹션 헤더는 카드보다 16 안쪽 — '최근 저장' 헤더(행 여백 16)와 같은 규칙이다.
+    static let unreadHeaderInset: CGFloat = unreadContentInset + 16
+}
+
 /// 탭 안에서 이동하는 화면들.
 enum LinkRoute: Hashable {
     case detail(UUID)
@@ -94,10 +105,17 @@ public struct HomeView: View {
     public var body: some View {
         NavigationStack(path: $path) {
             List {
-                // 좌우 여백은 `.insetGrouped` 섹션 인셋에 맡긴다 — 여기에 여백을 더 얹으면
-                // '최근 저장' 섹션 카드보다 안쪽으로 들어가 카드 좌우 라인이 어긋난다.
-                unreadSection
-                    .plainListRow(insets: EdgeInsets(top: 8, leading: 0, bottom: 0, trailing: 0))
+                // 캐러셀만 섹션 여백까지 0 으로 돌려야 스크롤 뷰포트가 화면 좌우 끝까지 닿는다 —
+                // 그러지 않으면 다음 카드가 뷰포트 밖으로 밀려 통째로 보이지 않는다.
+                // 걷어낸 여백은 콘텐츠가 `Constants.unreadContentInset` 으로 되얹어,
+                // '최근 저장' 섹션 카드와 좌우 라인을 그대로 맞춘다.
+                Section {
+                    unreadSection
+                        .plainListRow(
+                            insets: EdgeInsets(top: 8, leading: 0, bottom: 0, trailing: 0)
+                        )
+                }
+                .listSectionMargins(.horizontal, 0)
 
                 weeklyStatCard
                     .plainListRow(insets: EdgeInsets(top: 8, leading: 0, bottom: 8, trailing: 0))
@@ -137,7 +155,7 @@ public struct HomeView: View {
     private var unreadSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             GalpiSectionHeader("아직 안 읽은 갈피", badgeCount: viewModel.unreadCount)
-                .padding(.horizontal, 16)
+                .padding(.horizontal, Constants.unreadHeaderInset)
 
             if viewModel.unreadLinks.isEmpty {
                 // 저장이 0건인데 '다 읽었어요'가 뜨면 완료로 오해한다. 두 상태를 갈라 놓는다.
@@ -150,12 +168,14 @@ public struct HomeView: View {
                             path.append(.filtered(.all, title: "전체 갈피"))
                         }
                     )
+                    .padding(.horizontal, Constants.unreadContentInset)
                 } else {
                     GalpiEmptyState(
                         symbol: "bookmark",
                         title: "아직 갈피가 없어요",
                         message: "읽고 싶은 글을 공유 시트에서 갈피로 보내면 여기에 쌓여요."
                     )
+                    .padding(.horizontal, Constants.unreadContentInset)
                 }
             } else {
                 ScrollView(.horizontal) {
@@ -170,6 +190,7 @@ public struct HomeView: View {
                     }
                     // 카드 그림자가 잘리지 않도록 스크롤 콘텐츠에 여백을 준다.
                     .padding(.vertical, 6)
+                    .padding(.horizontal, Constants.unreadContentInset)
                 }
                 .scrollIndicators(.hidden)
                 .scrollClipDisabled()
