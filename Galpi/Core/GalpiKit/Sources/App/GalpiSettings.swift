@@ -52,6 +52,11 @@ public final class GalpiSettings {
         didSet { defaults.set(nickname, forKey: Key.nickname) }
     }
 
+    /// 검색 화면 '최근 검색' 기록 — 최신순. 변경은 아래 세 함수만 거친다.
+    public private(set) var recentSearches: [String] {
+        didSet { defaults.set(recentSearches, forKey: Key.recentSearches) }
+    }
+
     /// 프로필의 '갈피와 함께한 지 N일째' 기준일. 첫 실행 때 한 번 박힌다.
     public private(set) var installedAt: Date
 
@@ -72,6 +77,7 @@ public final class GalpiSettings {
         lastReminderNotifiedAt = store.object(forKey: Key.lastReminderNotifiedAt) as? Date
         lastSyncedAt = store.object(forKey: Key.lastSyncedAt) as? Date
         nickname = store.string(forKey: Key.nickname) ?? Default.nickname
+        recentSearches = store.stringArray(forKey: Key.recentSearches) ?? []
 
         if let stored = store.object(forKey: Key.installedAt) as? Date {
             installedAt = stored
@@ -93,9 +99,33 @@ public final class GalpiSettings {
         lastReminderNotifiedAt = nil
         lastSyncedAt = nil
         nickname = Default.nickname
+        recentSearches = []
 
         installedAt = now
         defaults.set(installedAt, forKey: Key.installedAt)
+    }
+
+    /// 검색어를 기록 맨 위에 올린다.
+    ///
+    /// 같은 말을 다시 검색하면 새 줄이 생기지 않고 원래 줄이 맨 위로 올라온다 — 대소문자만
+    /// 다른 것도 같은 말로 본다. 넘치는 꼬리는 잘라 `recentSearchLimit` 개까지만 남긴다.
+    public func addRecentSearch(_ keyword: String) {
+        let trimmed = keyword.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+
+        var updated = recentSearches.filter {
+            $0.caseInsensitiveCompare(trimmed) != .orderedSame
+        }
+        updated.insert(trimmed, at: 0)
+        recentSearches = Array(updated.prefix(Default.recentSearchLimit))
+    }
+
+    public func removeRecentSearch(_ keyword: String) {
+        recentSearches.removeAll { $0 == keyword }
+    }
+
+    public func clearRecentSearches() {
+        recentSearches = []
     }
 
     /// 프로필의 '함께한 지 N일째'. 설치 당일이 1일째다.
@@ -114,6 +144,9 @@ public final class GalpiSettings {
         static let reminderHour = 9
         static let isAIOrganizeEnabled = true
         static let nickname = "부지런한 갈피 수집가"
+
+        /// '최근 검색'이 검색 화면을 잡아먹지 않을 만큼만 남긴다.
+        static let recentSearchLimit = 10
     }
 
     private enum Key {
@@ -125,5 +158,6 @@ public final class GalpiSettings {
         static let lastSyncedAt = "galpi.sync.lastAt"
         static let nickname = "galpi.profile.nickname"
         static let installedAt = "galpi.profile.installedAt"
+        static let recentSearches = "galpi.search.recent"
     }
 }
