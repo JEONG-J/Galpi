@@ -96,24 +96,34 @@ public struct LibraryView: View {
             .navigationTitle("보관함")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                if !viewModel.folders.isEmpty {
-                    ToolbarItem(placement: .topBarTrailing) {
+                // 폴더 유무에 따라 버튼이 1↔2개로 바뀌면 타이틀 위치가 흔들린다.
+                // 툴바에는 항상 버튼 하나만 두고 액션은 메뉴 항목으로 묶는다.
+                ToolbarItem(placement: .topBarTrailing) {
+                    if viewModel.isEditingFolders {
+                        // 편집 종료는 메뉴 안에 숨기지 않는다 — 두 탭이 되면 안 된다.
                         Button {
                             viewModel.isEditingFolders.toggle()
                         } label: {
-                            Label(
-                                viewModel.isEditingFolders ? "폴더 편집 완료" : "폴더 편집",
-                                systemImage: viewModel.isEditingFolders
-                                    ? "checkmark" : "folder.badge.gearshape"
-                            )
+                            Label("완료", systemImage: "checkmark")
                         }
-                    }
-                }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        editingFolder = .create
-                    } label: {
-                        Label("새 폴더", systemImage: "folder.badge.plus")
+                        .accessibilityLabel("폴더 편집 완료")
+                    } else {
+                        Menu {
+                            Button {
+                                editingFolder = .create
+                            } label: {
+                                Label("새 폴더", systemImage: "folder.badge.plus")
+                            }
+                            if !viewModel.folders.isEmpty {
+                                Button {
+                                    viewModel.isEditingFolders.toggle()
+                                } label: {
+                                    Label("폴더 편집", systemImage: "folder.badge.gearshape")
+                                }
+                            }
+                        } label: {
+                            Label("폴더 관리", systemImage: "ellipsis")
+                        }
                     }
                 }
             }
