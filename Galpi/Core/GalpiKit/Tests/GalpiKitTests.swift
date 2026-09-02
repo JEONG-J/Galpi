@@ -447,3 +447,80 @@ struct WeeklyReportUseCaseTests {
         #expect(report.streakDays == 3)
     }
 }
+
+// MARK: - 최근 검색
+
+@Suite("최근 검색 기록")
+@MainActor
+struct RecentSearchTests {
+
+    @Test("같은 말을 다시 검색하면 쌓이지 않고 맨 위로 올라온다")
+    func promotesDuplicateToTop() {
+        let settings = makeSettings()
+
+        settings.recordSearch("스위프트")
+        settings.recordSearch("동시성")
+        settings.recordSearch("SwiftUI")
+        settings.recordSearch("스위프트")
+
+        #expect(settings.recentSearches == ["스위프트", "SwiftUI", "동시성"])
+    }
+
+    @Test("대소문자만 다른 검색어는 같은 말로 보고 마지막 표기를 남긴다")
+    func treatsCaseInsensitiveAsSame() {
+        let settings = makeSettings()
+
+        settings.recordSearch("swiftui")
+        settings.recordSearch("SwiftUI")
+
+        #expect(settings.recentSearches == ["SwiftUI"])
+    }
+
+    @Test("공백만 친 검색어는 기록하지 않는다")
+    func ignoresBlankQuery() {
+        let settings = makeSettings()
+
+        settings.recordSearch("   ")
+        settings.recordSearch("\n")
+
+        #expect(settings.recentSearches.isEmpty)
+    }
+
+    @Test("기록은 상한을 넘기지 않고 오래된 것부터 밀려난다")
+    func capsHistory() {
+        let settings = makeSettings()
+        let limit = GalpiSettings.recentSearchLimit
+
+        for index in 0...limit {
+            settings.recordSearch("검색어\(index)")
+        }
+
+        #expect(settings.recentSearches.count == limit)
+        #expect(settings.recentSearches.first == "검색어\(limit)")
+        #expect(!settings.recentSearches.contains("검색어0"))
+    }
+
+    @Test("한 건 삭제·전체 삭제가 기록에 반영된다")
+    func removesEntries() {
+        let settings = makeSettings()
+
+        settings.recordSearch("A")
+        settings.recordSearch("B")
+        settings.removeRecentSearch("A")
+        #expect(settings.recentSearches == ["B"])
+
+        settings.clearRecentSearches()
+        #expect(settings.recentSearches.isEmpty)
+    }
+
+    @Test("기록은 저장소에 남아 다음 실행에서도 읽힌다")
+    func persistsAcrossInstances() {
+        let suiteName = "galpi.tests.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suiteName)!
+        defaults.removePersistentDomain(forName: suiteName)
+
+        GalpiSettings(defaults: defaults).recordSearch("갈피")
+
+        #expect(GalpiSettings(defaults: defaults).recentSearches == ["갈피"])
+    }
+}
