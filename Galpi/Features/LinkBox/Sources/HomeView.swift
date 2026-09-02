@@ -162,7 +162,8 @@ public struct HomeView: View {
                 }
             } else {
                 ScrollView(.horizontal) {
-                    HStack(spacing: 12) {
+                    // 큰 Dynamic Type 에서 카드 높이가 벌어져도 상단은 맞춰 둔다.
+                    HStack(alignment: .top, spacing: 12) {
                         ForEach(viewModel.unreadLinks) { link in
                             Button { path.append(.detail(link.id)) } label: {
                                 UnreadLinkCard(link: link)
