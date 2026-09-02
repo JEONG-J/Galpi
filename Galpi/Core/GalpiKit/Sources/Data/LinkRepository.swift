@@ -56,6 +56,10 @@ public protocol LinkRepository: AnyObject {
 
     func delete(_ link: Link)
     func delete(_ folder: Folder)
+
+    /// 갈피·폴더·태그를 통째로 비운다 — 내 정보의 '모든 데이터 삭제'가 부르는 유일한 진입점.
+    func deleteAll() throws
+
     func save() throws
 }
 
@@ -194,6 +198,15 @@ public final class SwiftDataLinkRepository: LinkRepository {
     public func delete(_ link: Link) { context.delete(link) }
 
     public func delete(_ folder: Folder) { context.delete(folder) }
+
+    /// 모델별 일괄 삭제라 링크가 몇 만 개여도 메모리에 올리지 않는다.
+    /// 태그·폴더는 링크가 사라져도 남는 독립 레코드라 따로 지워야 한다.
+    public func deleteAll() throws {
+        try context.delete(model: Link.self)
+        try context.delete(model: Folder.self)
+        try context.delete(model: Tag.self)
+        try context.save()
+    }
 
     public func save() throws {
         guard context.hasChanges else { return }
