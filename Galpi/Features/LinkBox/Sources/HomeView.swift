@@ -14,10 +14,8 @@ fileprivate enum Constants {
     /// 캐러셀 섹션은 `listSectionMargins(.horizontal, 0)` 으로 스크롤 뷰포트를 화면 좌우 끝까지 넓힌다.
     /// 걷어낸 섹션 여백(`insetGrouped` compact 기본 16)을 콘텐츠가 직접 얹어야
     /// 카드·빈 상태가 '이번 주 소비율'·'최근 저장' 카드와 같은 x 에 남는다.
+    /// 섹션 헤더도 같은 값 — 검색·보관함처럼 헤더를 카드 좌측 라인에 맞춘다.
     static let unreadContentInset: CGFloat = 16
-
-    /// 섹션 헤더는 카드보다 16 안쪽 — '최근 저장' 헤더(행 여백 16)와 같은 규칙이다.
-    static let unreadHeaderInset: CGFloat = unreadContentInset + 16
 }
 
 /// 탭 안에서 이동하는 화면들.
@@ -155,7 +153,7 @@ public struct HomeView: View {
     private var unreadSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             GalpiSectionHeader("아직 안 읽은 갈피", badgeCount: viewModel.unreadCount)
-                .padding(.horizontal, Constants.unreadHeaderInset)
+                .padding(.horizontal, Constants.unreadContentInset)
 
             if viewModel.unreadLinks.isEmpty {
                 // 저장이 0건인데 '다 읽었어요'가 뜨면 완료로 오해한다. 두 상태를 갈라 놓는다.
@@ -264,7 +262,9 @@ public struct HomeView: View {
                 }
             }
             .textCase(nil)
-            .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 8, trailing: 16))
+            // 좌우는 섹션 인셋에만 맡긴다 — 여기에 여백을 더 얹으면 헤더가 리스트 카드보다
+            // 안쪽으로 들어가 '아직 안 읽은 갈피' 헤더와도 라인이 어긋난다.
+            .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 8, trailing: 0))
         }
     }
 
