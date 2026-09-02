@@ -21,7 +21,7 @@ final class LibraryViewModel {
     private(set) var tags: [Tag] = []
     private(set) var unreadCount = 0
     private(set) var favoriteCount = 0
-    private(set) var inboxCount = 0
+    private(set) var unfiledCount = 0
 
     var isEditingFolders = false
     /// 삭제가 거절된 사유. `nil` 이 아니면 보관함 alert 로 뜬다.
@@ -40,7 +40,7 @@ final class LibraryViewModel {
         tags = ((try? repository.tags()) ?? []).filter { $0.linkCount > 0 }
         unreadCount = (try? repository.count(matching: .unread)) ?? 0
         favoriteCount = (try? repository.count(matching: .favorite)) ?? 0
-        inboxCount = (try? repository.count(matching: .inbox)) ?? 0
+        unfiledCount = (try? repository.count(matching: .unfiled)) ?? 0
     }
 
     func delete(_ folder: Folder) {
@@ -137,8 +137,8 @@ public struct LibraryView: View {
                       pastel: .orange, filter: .unread)
             smartCard("즐겨찾기", count: viewModel.favoriteCount, symbol: "star.fill",
                       pastel: .yellow, filter: .favorite)
-            smartCard("받은함", count: viewModel.inboxCount, symbol: "tray.fill",
-                      pastel: .gray, filter: .inbox)
+            smartCard(Folder.unfiledName, count: viewModel.unfiledCount, symbol: "tray.fill",
+                      pastel: .gray, filter: .unfiled)
         }
     }
 

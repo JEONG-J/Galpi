@@ -63,9 +63,9 @@ enum LinkFormat {
         return host
     }
 
-    /// 시안의 폴더 라벨 — 폴더가 없으면 '받은함'.
+    /// 시안의 폴더 라벨 — 폴더가 없으면 '미분류'.
     static func folderName(_ link: Link) -> String {
-        link.folder?.name ?? "받은함"
+        link.folder?.name ?? Folder.unfiledName
     }
 }
 

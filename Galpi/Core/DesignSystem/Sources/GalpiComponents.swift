@@ -169,7 +169,7 @@ public struct GalpiPastel: Hashable, Sendable {
     public static let purple = GalpiPastel(name: "purple")
     public static let pink = GalpiPastel(name: "pink")
     public static let brown = GalpiPastel(name: "brown")
-    /// 시안의 '받은함'·'데이터 내보내기' 같은 무채색 자리.
+    /// 시안의 '미분류'·'데이터 내보내기' 같은 무채색 자리.
     public static let gray = GalpiPastel(name: "gray")
 
     public var foreground: Color {

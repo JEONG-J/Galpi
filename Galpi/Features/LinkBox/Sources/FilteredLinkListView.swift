@@ -176,8 +176,8 @@ struct FilteredLinkListView: View {
         case .favorite:
             ("star", "즐겨찾기가 비어 있어요",
              "갈피 상세에서 별을 누르면 여기에 모여요.")
-        case .inbox:
-            ("tray", "받은함이 비어 있어요",
+        case .unfiled:
+            ("tray", "미분류가 비어 있어요",
              "폴더를 고르지 않고 저장한 갈피가 여기로 들어와요.")
         case .folder:
             ("folder", "이 폴더가 비어 있어요",
@@ -196,9 +196,9 @@ struct FilteredLinkListView: View {
     }
 }
 
-#Preview("빈 목록 · 받은함") {
+#Preview("빈 목록 · 미분류") {
     NavigationStack {
-        FilteredLinkListView(filter: .inbox, title: "받은함", useCases: .empty())
+        FilteredLinkListView(filter: .unfiled, title: Folder.unfiledName, useCases: .empty())
     }
 }
 #endif

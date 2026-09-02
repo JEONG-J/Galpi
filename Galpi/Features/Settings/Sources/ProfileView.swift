@@ -81,7 +81,7 @@ final class ProfileViewModel {
     }
 
     var defaultFolderName: String {
-        folders.first { $0.id == settings.defaultFolderID }?.name ?? "받은함"
+        folders.first { $0.id == settings.defaultFolderID }?.name ?? Folder.unfiledName
     }
 
     var syncedText: String {
@@ -265,7 +265,7 @@ public struct ProfileView: View {
 
             Menu {
                 Picker("기본 저장 폴더", selection: defaultFolderBinding) {
-                    Text("받은함").tag(UUID?.none)
+                    Text(Folder.unfiledName).tag(UUID?.none)
                     ForEach(viewModel.folders) { folder in
                         Text(folder.name).tag(UUID?.some(folder.id))
                     }

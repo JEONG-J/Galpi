@@ -255,7 +255,7 @@ struct LinkOrderingTests {
 @Suite("폴더 관리")
 struct ManageFolderUseCaseTests {
 
-    @Test("폴더를 지워도 링크는 받은함으로 남는다")
+    @Test("폴더를 지워도 링크는 미분류로 남는다")
     func deletingFolderKeepsLinks() throws {
         let repository = try makeRepository()
         let folders = DefaultManageFolderUseCase(repository: repository, settings: makeSettings())
@@ -265,13 +265,13 @@ struct ManageFolderUseCaseTests {
             .execute(urlString: "https://example.com/a", folderID: folderID)
 
         #expect(try repository.count(matching: .folder(folderID)) == 1)
-        #expect(try repository.count(matching: .inbox) == 0)
+        #expect(try repository.count(matching: .unfiled) == 0)
 
         try folders.delete(folderID: folderID)
 
         #expect(try repository.folders().isEmpty)
         #expect(try repository.count(matching: .all) == 1)
-        #expect(try repository.count(matching: .inbox) == 1)
+        #expect(try repository.count(matching: .unfiled) == 1)
     }
 
     @Test("재정렬하면 sortOrder 가 인자 순서대로 다시 매겨진다")

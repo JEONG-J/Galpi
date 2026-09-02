@@ -10,12 +10,12 @@ import SwiftData
 
 /// 보관함 화면의 필터 축.
 ///
-/// `inbox` 는 별도 폴더 레코드가 아니라 "폴더가 지정되지 않은 링크"를 뜻한다.
+/// `unfiled` 는 별도 폴더 레코드가 아니라 "폴더가 지정되지 않은 링크"를 뜻한다.
 public enum LinkFilter: Hashable, Sendable {
     case all
     case unread
     case favorite
-    case inbox
+    case unfiled
     case folder(UUID)
     case tag(UUID)
 }
@@ -91,7 +91,7 @@ public final class SwiftDataLinkRepository: LinkRepository {
         // 스칼라 조건만 술어로 넘기고 관계 조건은 메모리에서 거른다.
         // ponytail: 링크 수천 건까지는 문제없다. 그 이상 늘면 folderID 를 비정규화해 술어로 옮긴다.
         switch filter {
-        case .all, .folder, .tag, .inbox:
+        case .all, .folder, .tag, .unfiled:
             descriptor.predicate = #Predicate { includeArchived || !$0.isArchived }
         case .unread:
             descriptor.predicate = #Predicate {
@@ -106,7 +106,7 @@ public final class SwiftDataLinkRepository: LinkRepository {
         var results = try context.fetch(descriptor)
 
         switch filter {
-        case .inbox:
+        case .unfiled:
             results = results.filter { $0.folder == nil }
         case .folder(let id):
             results = results.filter { $0.folder?.id == id }

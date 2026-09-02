@@ -53,7 +53,7 @@ public final class Link {
     /// 의미가 달라 플래그를 따로 둔다.
     public var isPinned: Bool = false
 
-    /// `nil` 이면 "받은함"(폴더 미지정) 이다 — 받은함은 별도 레코드가 아니다.
+    /// `nil` 이면 "미분류"(폴더 미지정) 이다 — 미분류는 별도 레코드가 아니다.
     public var folder: Folder?
 
     @Relationship(inverse: \Tag.links)

@@ -10,11 +10,14 @@ import SwiftData
 
 /// 사용자가 만든 폴더(설계 문서의 "카테고리").
 ///
-/// 폴더 미지정 링크는 화면에서 "받은함"으로 묶이며, 그에 대응하는 레코드는 만들지 않는다.
+/// 폴더 미지정 링크는 화면에서 "미분류"로 묶이며, 그에 대응하는 레코드는 만들지 않는다.
 @Model
 public final class Folder {
 
     // MARK: - Property
+
+    /// 폴더가 지정되지 않은 링크를 가리키는 화면 표시 이름. 실제 레코드는 없다.
+    public static let unfiledName = "미분류"
 
     public var id: UUID = UUID()
 

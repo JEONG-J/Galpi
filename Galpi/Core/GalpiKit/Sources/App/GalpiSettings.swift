@@ -35,7 +35,7 @@ public final class GalpiSettings {
         didSet { defaults.set(isAIOrganizeEnabled, forKey: Key.aiOrganize) }
     }
 
-    /// 공유 시트에서 미리 선택되는 폴더. `nil` 이면 받은함.
+    /// 공유 시트에서 미리 선택되는 폴더. `nil` 이면 미분류.
     public var defaultFolderID: UUID? {
         didSet { defaults.set(defaultFolderID?.uuidString, forKey: Key.defaultFolder) }
     }
