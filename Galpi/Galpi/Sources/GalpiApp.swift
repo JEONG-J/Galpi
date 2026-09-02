@@ -16,13 +16,21 @@ struct GalpiApp: App {
 
     private let modelContainer: ModelContainer
     @State private var useCases: GalpiUseCases
+    @State private var isSplashFinished = false
 
     // MARK: - Body
 
     var body: some Scene {
         WindowGroup {
-            RootView(useCases: useCases)
-                .modelContainer(modelContainer)
+            ZStack {
+                RootView(useCases: useCases)
+                    .modelContainer(modelContainer)
+
+                if !isSplashFinished {
+                    SplashView { isSplashFinished = true }
+                        .zIndex(1)
+                }
+            }
         }
     }
 
