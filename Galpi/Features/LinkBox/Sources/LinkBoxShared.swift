@@ -98,11 +98,12 @@ struct UnreadLinkCard: View {
             .frame(height: 92)
 
             VStack(alignment: .leading, spacing: 7) {
+                // 제목이 두 줄로 감기면 카드 높이가 제각각이 된다. 한 줄로 고정하고 말줄임한다.
                 Text(link.displayTitle)
                     .font(GalpiFont.text(13, .bold))
                     .foregroundStyle(GalpiColor.text)
-                    .lineSpacing(13 * 0.35)
-                    .lineLimit(2)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                 Text(LinkFormat.host(link))
