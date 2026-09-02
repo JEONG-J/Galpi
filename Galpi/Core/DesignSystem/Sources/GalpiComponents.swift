@@ -111,6 +111,10 @@ public struct GalpiSectionAction: View {
 // MARK: - 아이콘 배지
 
 /// 파스텔 배경 위의 아이콘 — 폴더·설정·스마트 리스트가 전부 이 형태다.
+///
+/// 모양 규칙: `cornerRadius == size / 2` 인 **원형**은 스마트 리스트처럼 개수를 세는
+/// 고정 항목에, `size` 의 1/3 안팎인 **스퀘어클**은 폴더처럼 사용자가 만든 항목에 쓴다.
+/// 두 모양이 한 화면에 섞이는 건 의도된 구분이다.
 public struct GalpiIconBadge: View {
 
     private let symbol: String

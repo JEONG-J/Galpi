@@ -205,41 +205,49 @@ public struct LibraryView: View {
         }
     }
 
+    /// 뱃지를 왼쪽에 두고 이름·개수를 오른쪽에 쌓는다. 세로 스택이던 시절엔 카드 폭
+    /// (2열 기준 ≈174pt)의 절반 이상이 빈 채로 남아 고정 높이 104pt 를 억지로 채워야 했다.
+    /// 높이는 콘텐츠가 정하게 두어 상·하 여백이 저절로 대칭이 된다.
     private func folderCell(_ folder: Folder) -> some View {
         Button {
             path.append(.filtered(.folder(folder.id), title: folder.name))
         } label: {
-            VStack(alignment: .leading, spacing: 10) {
-                HStack {
-                    GalpiIconBadge(
-                        symbol: folder.iconName, pastel: folder.pastel,
-                        size: 34, cornerRadius: 12, iconSize: 16
-                    )
-                    Spacer()
-                    if viewModel.isEditingFolders {
-                        Menu {
-                            folderActions(folder)
-                        } label: {
-                            Image(systemName: "ellipsis")
-                                .font(.system(size: 14, weight: .semibold))
-                                .foregroundStyle(GalpiColor.textTertiary)
-                                .frame(width: 24, height: 24)
-                        }
-                        .accessibilityLabel("\(folder.name) 폴더 더 보기")
-                    }
+            HStack(spacing: Constants.badgeGap) {
+                GalpiIconBadge(
+                    symbol: folder.iconName, pastel: folder.pastel,
+                    size: 36, cornerRadius: 12, iconSize: 17
+                )
+                // 이름과 개수는 한 덩어리로 읽혀야 해서 뱃지와의 간격보다 훨씬 좁게 붙인다.
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(folder.name)
+                        .font(GalpiFont.text(15, .bold))
+                        .foregroundStyle(GalpiColor.text)
+                        .lineLimit(1)
+                    Text("\(folder.linkCount)개")
+                        .font(GalpiFont.text(12, .medium))
+                        .foregroundStyle(GalpiColor.textSecondary)
                 }
-                Text(folder.name)
-                    .font(GalpiFont.text(15, .bold))
-                    .foregroundStyle(GalpiColor.text)
-                    .lineLimit(1)
-                Text("\(folder.linkCount)개")
-                    .font(GalpiFont.text(11, .medium))
-                    .foregroundStyle(GalpiColor.textSecondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+                if viewModel.isEditingFolders {
+                    Menu {
+                        folderActions(folder)
+                    } label: {
+                        Image(systemName: "ellipsis")
+                            .font(.system(size: 15, weight: .semibold))
+                            .foregroundStyle(GalpiColor.textTertiary)
+                            .frame(width: Constants.menuIconBox, height: Constants.menuIconBox)
+                            // 레이아웃은 20pt 만 차지하고 히트 영역만 44pt 로 넓힌다. 2열 카드는
+                            // 폭이 ≈174pt 라 버튼이 44pt 를 실제로 점유하면 폴더 이름이 서너 자에서
+                            // 잘린다.
+                            .contentShape(Rectangle().inset(by: Constants.menuHitInset))
+                    }
+                    .accessibilityLabel("\(folder.name) 폴더 더 보기")
+                }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(14)
-            .frame(height: 104, alignment: .topLeading)
-            .galpiCard(cornerRadius: 20)
+            .padding(Constants.cardPadding)
+            .galpiCard(cornerRadius: 18)
         }
         .buttonStyle(.plain)
         .contextMenu { folderActions(folder) }
@@ -278,6 +286,19 @@ public struct LibraryView: View {
             set: { if !$0 { viewModel.folderDeleteFailure = nil } }
         )
     }
+}
+
+// MARK: - Constants
+
+fileprivate enum Constants {
+
+    /// 뱃지와 텍스트 그룹 사이. 이름↔개수(2pt)보다 훨씬 넓어야 두 덩어리로 읽힌다.
+    static let badgeGap: CGFloat = 12
+    static let cardPadding: CGFloat = 12
+    /// 편집 모드 `ellipsis` 가 레이아웃에서 차지하는 크기.
+    static let menuIconBox: CGFloat = 20
+    /// `menuIconBox` 를 HIG 최소 터치 타깃(44pt)까지 넓히는 음수 인셋.
+    static let menuHitInset: CGFloat = (menuIconBox - 44) / 2
 }
 
 #if DEBUG
