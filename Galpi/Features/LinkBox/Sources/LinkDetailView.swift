@@ -235,27 +235,10 @@ struct LinkDetailView: View {
 
     private func memoSection(_ link: Link) -> some View {
         VStack(alignment: .leading, spacing: 10) {
-            HStack {
-                Text("메모")
-                    .font(GalpiFont.text(15, .bold))
-                    .foregroundStyle(GalpiColor.text)
-                Spacer()
-                Button {
-                    if viewModel.isEditingMemo {
-                        viewModel.saveMemo()
-                    } else {
-                        viewModel.isEditingMemo = true
-                    }
-                } label: {
-                    Image(systemName: viewModel.isEditingMemo ? "checkmark" : "pencil")
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundStyle(
-                            viewModel.isEditingMemo ? GalpiColor.main : GalpiColor.textTertiary
-                        )
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel(viewModel.isEditingMemo ? "메모 저장" : "메모 편집")
-            }
+            // 편집/저장은 상단 툴바(`toolbarActions`)로 옮겼다 — 섹션 헤더는 레이블만 남긴다.
+            Text("메모")
+                .font(GalpiFont.text(15, .bold))
+                .foregroundStyle(GalpiColor.text)
 
             Group {
                 if viewModel.isEditingMemo {
@@ -287,6 +270,21 @@ struct LinkDetailView: View {
 
     @ToolbarContentBuilder
     private var toolbarActions: some ToolbarContent {
+        ToolbarItem(placement: .topBarTrailing) {
+            // 메모 편집/저장은 섹션 헤더에서 툴바로 올렸다 — 화면 액션 진입점을 한곳에 모은다.
+            Button {
+                if viewModel.isEditingMemo {
+                    viewModel.saveMemo()
+                } else {
+                    viewModel.isEditingMemo = true
+                }
+            } label: {
+                Image(systemName: viewModel.isEditingMemo ? "checkmark" : "pencil")
+            }
+            .tint(viewModel.isEditingMemo ? GalpiColor.main : GalpiColor.text)
+            .accessibilityLabel(viewModel.isEditingMemo ? "메모 저장" : "메모 편집")
+        }
+
         ToolbarItem(placement: .topBarTrailing) {
             let isFavorite = viewModel.link?.isFavorite == true
             Button {
