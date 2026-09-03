@@ -25,7 +25,11 @@ fi
 
 make bootstrap   # mise trust + mise install (mise.toml 이 tuist 버전 고정)
 make install     # tuist install — SPM 의존성 해석
-make generate    # tuist generate --no-open — Galpi.xcworkspace 생성
+# Xcode Cloud 가 빌드마다 증가시키는 번호를 CFBundleVersion 으로 쓴다. 넘기지 않으면
+# Settings+Recommended.swift 의 기본값 1 이 박혀, 같은 마케팅 버전의 두 번째
+# TestFlight 업로드부터 빌드 번호 중복으로 거부된다.
+# tuist generate --no-open — Galpi.xcworkspace 생성
+TUIST_BUILD_NUMBER="${CI_BUILD_NUMBER:-1}" make generate
 
 echo "▶︎ 생성된 워크스페이스:"
 ls -d Galpi.xcworkspace
