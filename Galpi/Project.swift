@@ -31,7 +31,11 @@ let project = Project(
                     ],
                     // 미열람 리마인드 재등록을 백그라운드에서 보정한다(best effort).
                     // 식별자는 ReminderScheduler.backgroundRefreshTaskIdentifier 와 같아야 한다.
-                    "UIBackgroundModes": ["fetch"],
+                    // remote-notification 은 CloudKit 이 보내는 조용한 푸시를 받기 위한 것 —
+                    // 없으면 다른 기기의 변경이 앱 재실행 전까지 반영되지 않는다.
+                    "UIBackgroundModes": ["fetch", "remote-notification"],
+                    // HTTPS 외 암호화를 쓰지 않는다. 없으면 업로드마다 수출규정 질문이 뜬다.
+                    "ITSAppUsesNonExemptEncryption": false,
                     // 시안이 라이트 전용이라 다크 팔레트가 없다. 다크 시안이 나오기 전까지 고정.
                     "UIUserInterfaceStyle": "Light",
                     "BGTaskSchedulerPermittedIdentifiers": [
