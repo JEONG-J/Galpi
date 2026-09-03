@@ -1,7 +1,7 @@
 import ProjectDescription
 
 private let deploymentTargets: DeploymentTargets = .iOS("26.0")
-private let destinations: Destinations = .iOS
+private let destinations: Destinations = [.iPhone]
 
 /// Widget Extension 타겟용 Project 생성 헬퍼
 ///

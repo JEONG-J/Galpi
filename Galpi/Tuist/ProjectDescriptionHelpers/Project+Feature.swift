@@ -25,7 +25,7 @@ public func featureProject(
     var targets: [Target] = [
         .target(
             name: targetName,
-            destinations: .iOS,
+            destinations: [.iPhone],
             product: .staticFramework,
             bundleId: bundleId,
             deploymentTargets: .iOS("26.0"),
@@ -41,7 +41,7 @@ public func featureProject(
         targets.append(
             .target(
                 name: "\(targetName)Tests",
-                destinations: .iOS,
+                destinations: [.iPhone],
                 product: .unitTests,
                 bundleId: "\(bundleId).tests",
                 deploymentTargets: .iOS("26.0"),

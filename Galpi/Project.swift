@@ -7,7 +7,7 @@ let project = Project(
     targets: [
         .target(
             name: "Galpi",
-            destinations: .iOS,
+            destinations: [.iPhone],
             product: .app,
             // App Store 앱 레코드와 동일해야 한다. 이 값이 바뀌면 별개 앱이 되어
             // App Group·iCloud 컨테이너 식별자까지 전부 무효화된다.
@@ -16,6 +16,8 @@ let project = Project(
             infoPlist: .extendingDefault(
                 with: [
                     "CFBundleDisplayName": "갈피",
+                    // App Store 카테고리. 링크를 모아 두고 읽어 치우는 도구라 생산성.
+                    "LSApplicationCategoryType": "public.app-category.productivity",
                     "CFBundleShortVersionString": "$(MARKETING_VERSION)",
                     "CFBundleVersion": "$(CURRENT_PROJECT_VERSION)",
                     "UILaunchScreen": [
@@ -84,7 +86,7 @@ let project = Project(
         ),
         .target(
             name: "GalpiShare",
-            destinations: .iOS,
+            destinations: [.iPhone],
             product: .appExtension,
             // 앱 번들 ID 접두사를 그대로 따라야 확장으로 인정된다.
             bundleId: "com.app.galpi.share",
