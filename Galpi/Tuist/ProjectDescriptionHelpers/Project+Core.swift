@@ -10,7 +10,7 @@ private let bundleIdBase = "com.app.galpi.core"
 /// - Parameters:
 ///   - name: 타겟 이름 (예: "GalpiKit", "GalpiDesignSystem")
 ///   - bundleIdSuffix: bundleId 접미사 (예: "kit", "designsystem")
-///   - destinations: 지원 플랫폼 (기본값: `.iOS`)
+///   - destinations: 지원 플랫폼 (기본값: `[.iPhone]` — 앱이 아이폰 전용이다)
 ///   - deploymentTargets: 배포 대상 (기본값: iOS 26.0)
 ///   - dependencies: 메인 타겟 의존성 목록
 ///   - includesTests: `true`이면 `Tests/**` 소스를 사용하는 unitTests 타겟을 함께 생성
@@ -19,7 +19,7 @@ private let bundleIdBase = "com.app.galpi.core"
 public func coreProject(
     name: String,
     bundleIdSuffix: String,
-    destinations: Destinations = .iOS,
+    destinations: Destinations = [.iPhone],
     deploymentTargets: DeploymentTargets = .iOS("26.0"),
     dependencies: [TargetDependency] = [],
     resources: ResourceFileElements? = nil,
