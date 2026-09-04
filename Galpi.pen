@@ -4968,6 +4968,7 @@
           "id": "C0XmtD",
           "name": "레이어 소스",
           "gap": 64,
+          "alignItems": "end",
           "children": [
             {
               "type": "frame",
@@ -5279,6 +5280,691 @@
           ]
         }
       ]
+    },
+    {
+      "type": "frame",
+      "id": "ovAk7",
+      "x": 5000,
+      "y": 0,
+      "name": "App Store · 01 홈",
+      "clip": true,
+      "width": 1242,
+      "height": 2688,
+      "fill": {
+        "type": "gradient",
+        "gradientType": "linear",
+        "enabled": true,
+        "rotation": 180,
+        "size": {
+          "height": 1
+        },
+        "colors": [
+          {
+            "color": "$store-bg-top",
+            "position": 0
+          },
+          {
+            "color": "$store-bg-bottom",
+            "position": 1
+          }
+        ]
+      },
+      "layout": "vertical",
+      "gap": 103,
+      "padding": [
+        134,
+        94,
+        0,
+        94
+      ],
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "xiOPA",
+          "name": "Header",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 28,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "atTvZ",
+              "name": "Pill",
+              "fill": "$tint",
+              "cornerRadius": 999,
+              "padding": [
+                15,
+                34
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "A6EzV",
+                  "name": "Pill Label",
+                  "fill": "$main",
+                  "content": "안 읽은 갈피 먼저",
+                  "fontFamily": "$font",
+                  "fontSize": 40,
+                  "fontWeight": "600"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "yJ4r6",
+              "name": "Headline",
+              "fill": "$text",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "쌓아만 두던 링크,\n이번 주엔 진짜 읽어요",
+              "lineHeight": 1.32,
+              "textAlign": "center",
+              "fontFamily": "$font",
+              "fontSize": 90,
+              "fontWeight": "700"
+            },
+            {
+              "type": "text",
+              "id": "Z14FCe",
+              "name": "Subhead",
+              "fill": "$text2",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "오래 묵은 갈피부터 꺼내 보여주고,\n이번 주 소비율까지 한눈에",
+              "lineHeight": 1.5,
+              "textAlign": "center",
+              "fontFamily": "$font",
+              "fontSize": 43,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "HWzqH",
+          "name": "Device",
+          "fill": "$bezel",
+          "cornerRadius": 96,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#1C2C5E33",
+            "offset": {
+              "x": 0,
+              "y": 38
+            },
+            "blur": 85
+          },
+          "padding": 11,
+          "children": [
+            {
+              "type": "frame",
+              "id": "Hn7g4",
+              "name": "Screenshot",
+              "clip": true,
+              "width": 866,
+              "height": 1881,
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "design/AppStore/screens/01-home.png",
+                "mode": "fill"
+              },
+              "cornerRadius": 86
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "syBTB",
+      "x": 6520,
+      "y": 0,
+      "name": "App Store · 02 보관함",
+      "clip": true,
+      "width": 1242,
+      "height": 2688,
+      "fill": {
+        "type": "gradient",
+        "gradientType": "linear",
+        "enabled": true,
+        "rotation": 180,
+        "size": {
+          "height": 1
+        },
+        "colors": [
+          {
+            "color": "$store-bg-top",
+            "position": 0
+          },
+          {
+            "color": "$store-bg-bottom",
+            "position": 1
+          }
+        ]
+      },
+      "layout": "vertical",
+      "gap": 103,
+      "padding": [
+        134,
+        94,
+        0,
+        94
+      ],
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "QyoN9",
+          "name": "Header",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 28,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "t5K12",
+              "name": "Pill",
+              "fill": "$tint",
+              "cornerRadius": 999,
+              "padding": [
+                15,
+                34
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "YTXvV",
+                  "name": "Pill Label",
+                  "fill": "$main",
+                  "content": "폴더 · 태그 정리",
+                  "fontFamily": "$font",
+                  "fontSize": 40,
+                  "fontWeight": "600"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "cVFkO",
+              "name": "Headline",
+              "fill": "$text",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "흩어진 링크를\n한 곳에 가지런히",
+              "lineHeight": 1.32,
+              "textAlign": "center",
+              "fontFamily": "$font",
+              "fontSize": 90,
+              "fontWeight": "700"
+            },
+            {
+              "type": "text",
+              "id": "Zj3Uc",
+              "name": "Subhead",
+              "fill": "$text2",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "폴더와 태그로 묶어 두면\n보관함이 저절로 정리돼요",
+              "lineHeight": 1.5,
+              "textAlign": "center",
+              "fontFamily": "$font",
+              "fontSize": 43,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "SUrhN",
+          "name": "Device",
+          "fill": "$bezel",
+          "cornerRadius": 96,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#1C2C5E33",
+            "offset": {
+              "x": 0,
+              "y": 38
+            },
+            "blur": 85
+          },
+          "padding": 11,
+          "children": [
+            {
+              "type": "frame",
+              "id": "bBWwZ",
+              "name": "Screenshot",
+              "clip": true,
+              "width": 866,
+              "height": 1881,
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "design/AppStore/screens/02-library.png",
+                "mode": "fill"
+              },
+              "cornerRadius": 86
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "g9E3Y4",
+      "x": 8040,
+      "y": 0,
+      "name": "App Store · 03 링크 노트",
+      "clip": true,
+      "width": 1242,
+      "height": 2688,
+      "fill": {
+        "type": "gradient",
+        "gradientType": "linear",
+        "enabled": true,
+        "rotation": 180,
+        "size": {
+          "height": 1
+        },
+        "colors": [
+          {
+            "color": "$store-bg-top",
+            "position": 0
+          },
+          {
+            "color": "$store-bg-bottom",
+            "position": 1
+          }
+        ]
+      },
+      "layout": "vertical",
+      "gap": 103,
+      "padding": [
+        134,
+        94,
+        0,
+        94
+      ],
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "jf17D",
+          "name": "Header",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 28,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "tUgFp",
+              "name": "Pill",
+              "fill": "$tint",
+              "cornerRadius": 999,
+              "padding": [
+                15,
+                34
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "Oj6tr",
+                  "name": "Pill Label",
+                  "fill": "$main",
+                  "content": "AI 요약 · 메모",
+                  "fontFamily": "$font",
+                  "fontSize": 40,
+                  "fontWeight": "600"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "ICEQU",
+              "name": "Headline",
+              "fill": "$text",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "링크가 그냥\n노트가 됩니다",
+              "lineHeight": 1.32,
+              "textAlign": "center",
+              "fontFamily": "$font",
+              "fontSize": 90,
+              "fontWeight": "700"
+            },
+            {
+              "type": "text",
+              "id": "wDJ2i",
+              "name": "Subhead",
+              "fill": "$text2",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "AI가 핵심을 요약해 주고,\n내 생각은 메모로 덧붙여요",
+              "lineHeight": 1.5,
+              "textAlign": "center",
+              "fontFamily": "$font",
+              "fontSize": 43,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "z8gBZi",
+          "name": "Device",
+          "fill": "$bezel",
+          "cornerRadius": 96,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#1C2C5E33",
+            "offset": {
+              "x": 0,
+              "y": 38
+            },
+            "blur": 85
+          },
+          "padding": 11,
+          "children": [
+            {
+              "type": "frame",
+              "id": "xjr5y",
+              "name": "Screenshot",
+              "clip": true,
+              "width": 866,
+              "height": 1881,
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "design/AppStore/screens/03-detail.png",
+                "mode": "fill"
+              },
+              "cornerRadius": 86
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "WTqcl",
+      "x": 9560,
+      "y": 0,
+      "name": "App Store · 04 검색",
+      "clip": true,
+      "width": 1242,
+      "height": 2688,
+      "fill": {
+        "type": "gradient",
+        "gradientType": "linear",
+        "enabled": true,
+        "rotation": 180,
+        "size": {
+          "height": 1
+        },
+        "colors": [
+          {
+            "color": "$store-bg-top",
+            "position": 0
+          },
+          {
+            "color": "$store-bg-bottom",
+            "position": 1
+          }
+        ]
+      },
+      "layout": "vertical",
+      "gap": 103,
+      "padding": [
+        134,
+        94,
+        0,
+        94
+      ],
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "RjNNI",
+          "name": "Header",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 28,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "z7TcUg",
+              "name": "Pill",
+              "fill": "$tint",
+              "cornerRadius": 999,
+              "padding": [
+                15,
+                34
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "k4ePi",
+                  "name": "Pill Label",
+                  "fill": "$main",
+                  "content": "제목 · 메모 · 태그 검색",
+                  "fontFamily": "$font",
+                  "fontSize": 40,
+                  "fontWeight": "600"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "P0hLd",
+              "name": "Headline",
+              "fill": "$text",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "기억나는 단어\n하나면 충분해요",
+              "lineHeight": 1.32,
+              "textAlign": "center",
+              "fontFamily": "$font",
+              "fontSize": 90,
+              "fontWeight": "700"
+            },
+            {
+              "type": "text",
+              "id": "TqFW7",
+              "name": "Subhead",
+              "fill": "$text2",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "제목도 메모도 태그도\n한 번에 훑어서 찾아 줍니다",
+              "lineHeight": 1.5,
+              "textAlign": "center",
+              "fontFamily": "$font",
+              "fontSize": 43,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "J5rkQu",
+          "name": "Device",
+          "fill": "$bezel",
+          "cornerRadius": 96,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#1C2C5E33",
+            "offset": {
+              "x": 0,
+              "y": 38
+            },
+            "blur": 85
+          },
+          "padding": 11,
+          "children": [
+            {
+              "type": "frame",
+              "id": "MdiAf",
+              "name": "Screenshot",
+              "clip": true,
+              "width": 866,
+              "height": 1881,
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "design/AppStore/screens/04-search.png",
+                "mode": "fill"
+              },
+              "cornerRadius": 86
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "G8dRL",
+      "x": 11080,
+      "y": 0,
+      "name": "App Store · 05 내 정보",
+      "clip": true,
+      "width": 1242,
+      "height": 2688,
+      "fill": {
+        "type": "gradient",
+        "gradientType": "linear",
+        "enabled": true,
+        "rotation": 180,
+        "size": {
+          "height": 1
+        },
+        "colors": [
+          {
+            "color": "$store-bg-top",
+            "position": 0
+          },
+          {
+            "color": "$store-bg-bottom",
+            "position": 1
+          }
+        ]
+      },
+      "layout": "vertical",
+      "gap": 103,
+      "padding": [
+        134,
+        94,
+        0,
+        94
+      ],
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "D0ABsq",
+          "name": "Header",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 28,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "eaP20",
+              "name": "Pill",
+              "fill": "$tint",
+              "cornerRadius": 999,
+              "padding": [
+                15,
+                34
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "XHRCE",
+                  "name": "Pill Label",
+                  "fill": "$main",
+                  "content": "주간 리포트",
+                  "fontFamily": "$font",
+                  "fontSize": 40,
+                  "fontWeight": "600"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "CUXGy",
+              "name": "Headline",
+              "fill": "$text",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "이번 주,\n얼마나 읽었을까",
+              "lineHeight": 1.32,
+              "textAlign": "center",
+              "fontFamily": "$font",
+              "fontSize": 90,
+              "fontWeight": "700"
+            },
+            {
+              "type": "text",
+              "id": "SJzfW",
+              "name": "Subhead",
+              "fill": "$text2",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "읽은 갈피가 쌓일수록\n수집가 뱃지도 함께 자라요",
+              "lineHeight": 1.5,
+              "textAlign": "center",
+              "fontFamily": "$font",
+              "fontSize": 43,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "vRJcR",
+          "name": "Device",
+          "fill": "$bezel",
+          "cornerRadius": 96,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#1C2C5E33",
+            "offset": {
+              "x": 0,
+              "y": 38
+            },
+            "blur": 85
+          },
+          "padding": 11,
+          "children": [
+            {
+              "type": "frame",
+              "id": "heGEw",
+              "name": "Screenshot",
+              "clip": true,
+              "width": 866,
+              "height": 1881,
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "design/AppStore/screens/05-profile.png",
+                "mode": "fill"
+              },
+              "cornerRadius": 86
+            }
+          ]
+        }
+      ]
     }
   ],
   "variables": {
@@ -5329,6 +6015,18 @@
     "font": {
       "type": "string",
       "value": "Noto Sans KR"
+    },
+    "store-bg-top": {
+      "type": "color",
+      "value": "#EAF0FF"
+    },
+    "store-bg-bottom": {
+      "type": "color",
+      "value": "#F7F9FE"
+    },
+    "bezel": {
+      "type": "color",
+      "value": "#0E1116"
     }
   },
   "fileToken": "234684d8-b58e-426c-b54d-a894cb0c4c88"
