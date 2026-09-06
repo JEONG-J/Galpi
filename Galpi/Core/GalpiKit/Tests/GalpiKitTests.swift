@@ -5,6 +5,7 @@
 //  Created by euijjang97 on 9/1/26.
 //
 
+import CoreData
 import Foundation
 import SwiftData
 import Testing
@@ -490,6 +491,17 @@ struct EraseAllDataTests {
         #expect(settings.nickname == "부지런한 갈피 수집가")
         #expect(settings.recentSearches.isEmpty)
         #expect(settings.installedAt == date("2026-09-03T12:00:00Z"))
+    }
+
+    @Test("import·export 성공만 '마지막 동기화' 로 찍힌다")
+    func stampsOnlySucceededImportOrExport() {
+        let end = date("2026-09-01T00:00:00Z")
+
+        #expect(GalpiSettings.syncStamp(type: .export, succeeded: true, endDate: end) == end)
+        #expect(GalpiSettings.syncStamp(type: .import, succeeded: true, endDate: end) == end)
+        #expect(GalpiSettings.syncStamp(type: .setup, succeeded: true, endDate: end) == nil)
+        #expect(GalpiSettings.syncStamp(type: .export, succeeded: false, endDate: end) == nil)
+        #expect(GalpiSettings.syncStamp(type: .export, succeeded: true, endDate: nil) == nil)
     }
 
     @Test("초기화한 값은 같은 저장소를 다시 열어도 유지된다")

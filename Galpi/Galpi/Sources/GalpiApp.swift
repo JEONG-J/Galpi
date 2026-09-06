@@ -46,6 +46,7 @@ struct GalpiApp: App {
         }
 
         let useCases = GalpiUseCases(container: modelContainer)
+        useCases.settings.observeCloudKitSync()
         #if DEBUG
         try? GalpiSampleData.seedIfEmpty(repository: useCases.repository)
         #endif
