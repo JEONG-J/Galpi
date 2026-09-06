@@ -3,6 +3,9 @@ import ProjectDescriptionHelpers
 
 let project = Project(
     name: "Galpi",
+    // App Store 가 읽는 앱의 기본 언어. 없으면 Xcode 기본값 `en` 이라 스토어에
+    // "영어"로 표기된다. 번들 CFBundleDevelopmentRegion 도 아래에서 함께 못박는다.
+    options: .options(developmentRegion: "ko"),
     settings: recommendedProjectSettings,
     targets: [
         .target(
@@ -16,6 +19,7 @@ let project = Project(
             infoPlist: .extendingDefault(
                 with: [
                     "CFBundleDisplayName": "갈피",
+                    "CFBundleDevelopmentRegion": "ko",
                     // App Store 카테고리. 링크를 모아 두고 읽어 치우는 도구라 생산성.
                     "LSApplicationCategoryType": "public.app-category.productivity",
                     "CFBundleShortVersionString": "$(MARKETING_VERSION)",
@@ -94,6 +98,7 @@ let project = Project(
             infoPlist: .extendingDefault(
                 with: [
                     "CFBundleDisplayName": "갈피에 저장",
+                    "CFBundleDevelopmentRegion": "ko",
                     "CFBundleShortVersionString": "$(MARKETING_VERSION)",
                     "CFBundleVersion": "$(CURRENT_PROJECT_VERSION)",
                     "UIUserInterfaceStyle": "Light",
