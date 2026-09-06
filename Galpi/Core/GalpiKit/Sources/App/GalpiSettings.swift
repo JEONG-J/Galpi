@@ -5,6 +5,7 @@
 //  Created by euijjang97 on 9/1/26.
 //
 
+import CoreData
 import Foundation
 import Observation
 
@@ -47,6 +48,9 @@ public final class GalpiSettings {
     public var lastSyncedAt: Date? {
         didSet { defaults.set(lastSyncedAt, forKey: Key.lastSyncedAt) }
     }
+
+    /// `observeCloudKitSync()` 가 등록한 알림 토큰. 두 번 등록하지 않으려고 들고 있는다.
+    @ObservationIgnored private var syncObserver: (any NSObjectProtocol)?
 
     public var nickname: String {
         didSet { defaults.set(nickname, forKey: Key.nickname) }
@@ -126,6 +130,41 @@ public final class GalpiSettings {
 
     public func clearRecentSearches() {
         recentSearches = []
+    }
+
+    /// CloudKit 미러링 이벤트를 받아 '마지막 동기화' 시각을 찍는다. 앱 시작 때 한 번 부른다.
+    ///
+    /// SwiftData 는 내부적으로 `NSPersistentCloudKitContainer` 로 미러링하므로 그 이벤트 알림이
+    /// 그대로 올라온다. 공식 SwiftData API 는 아니라 OS 업데이트로 끊길 수 있는데, 그때는 값이
+    /// 안 찍혀 '대기 중' 으로 남을 뿐 저장·동기화 자체는 영향받지 않는다.
+    public func observeCloudKitSync() {
+        guard syncObserver == nil else { return }
+        syncObserver = NotificationCenter.default.addObserver(
+            forName: NSPersistentCloudKitContainer.eventChangedNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] notification in
+            let event = notification.userInfo?[
+                NSPersistentCloudKitContainer.eventNotificationUserInfoKey
+            ] as? NSPersistentCloudKitContainer.Event
+            guard let event,
+                  let stamp = Self.syncStamp(
+                      type: event.type, succeeded: event.succeeded, endDate: event.endDate
+                  ) else { return }
+            Task { @MainActor in self?.lastSyncedAt = stamp }
+        }
+    }
+
+    /// 이벤트가 '마지막 동기화' 로 찍을 만한지 판정한다.
+    ///
+    /// `setup` 은 스키마·구독 준비일 뿐 데이터가 오간 게 아니라서 뺀다. 진행 중인 이벤트는
+    /// `endDate` 가 없고, 실패한 이벤트는 찍으면 안 된다.
+    /// (`Event` 를 테스트에서 만들 수 없어 판정만 값으로 떼어 둔다.)
+    static func syncStamp(
+        type: NSPersistentCloudKitContainer.EventType, succeeded: Bool, endDate: Date?
+    ) -> Date? {
+        guard succeeded, type == .import || type == .export else { return nil }
+        return endDate
     }
 
     /// 프로필의 '함께한 지 N일째'. 설치 당일이 1일째다.
