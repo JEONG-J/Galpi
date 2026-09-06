@@ -123,6 +123,7 @@ public struct SaveLinkSheet: View {
     // MARK: - Property
 
     @State private var viewModel: SaveLinkViewModel
+    @State private var sheetHeight: CGFloat = 430
     @Environment(\.dismiss) private var dismiss
 
     private let onFinish: (SaveLinkOutcome?) -> Void
@@ -143,25 +144,29 @@ public struct SaveLinkSheet: View {
     // MARK: - Body
 
     public var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            header
-            linkRow
-            folderRow
-            tagSection
-            Spacer(minLength: 0)
-            GalpiPrimaryButton(viewModel.duplicateLinkID == nil ? "저장하기" : "이미 저장된 갈피") {
-                let outcome = viewModel.save()
-                onFinish(outcome)
-                dismiss()
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                header
+                linkRow
+                folderRow
+                tagSection
+                GalpiPrimaryButton(viewModel.duplicateLinkID == nil ? "저장하기" : "이미 저장된 갈피") {
+                    let outcome = viewModel.save()
+                    onFinish(outcome)
+                    dismiss()
+                }
+                .padding(.top, 4)
             }
+            .padding(.horizontal, 20)
+            .padding(.top, 24)
+            .padding(.bottom, 26)
+            .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { sheetHeight = $0 }
         }
-        .padding(.horizontal, 20)
-        .padding(.top, 10)
-        .padding(.bottom, 26)
-        .background(GalpiColor.surface)
-        .presentationDetents([.height(430)])
+        .scrollBounceBehavior(.basedOnSize)
+        .presentationDetents([.height(sheetHeight)])
         .presentationDragIndicator(.visible)
         .presentationCornerRadius(38)
+        .presentationBackground(GalpiColor.surface)
         .task { await viewModel.prepare() }
     }
 
