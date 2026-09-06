@@ -306,9 +306,13 @@ public struct GalpiThumbnail: View {
     public var body: some View {
         Group {
             if let imageData, let image = UIImage(data: imageData) {
-                Image(uiImage: image)
-                    .resizable()
-                    .scaledToFill()
+                // `scaledToFill()` 은 확대된 결과 크기를 자기 크기로 보고해 `clipShape` 가
+                // 무력해진다. `Color.clear` 로 제안 크기를 고정하고 이미지는 오버레이로 얹는다.
+                Color.clear.overlay {
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFill()
+                }
             } else {
                 GalpiColor.thumbnail.overlay {
                     Image(systemName: symbol)
